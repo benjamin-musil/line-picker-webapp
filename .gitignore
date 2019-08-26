@@ -1,0 +1,4 @@
+.idea
+.orig
+*__pycache__*
+.DS_Store
