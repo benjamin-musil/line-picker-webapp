@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
 from pymongo import MongoClient
+from bson.json_util import dumps
 from datetime import datetime
 
 app = Flask(__name__)
@@ -14,8 +15,17 @@ def example_function():
 def example_get():
     # for the connection to work you need dnspython
     db = mongodb_get()
-    print(db['Test Restaurants'])
-    return{'message': 'hello world'}
+    # there is a space after the name, if you look on the website it doesn't look like there is though
+    # so that's really annoying
+    collection = db['Test Restaurants ']
+    tacos = collection.find({u'Category': u'Tacos'})
+    json_arr = []
+    for i in tacos:
+        print(i)
+        json_arr.append(dumps(i))
+    print(json_arr)
+    return(jsonify(json_arr))
+    # return{'message': 'hello world'}
 
 
 
