@@ -43,7 +43,7 @@ def get_wait():
     object_id = json_arr[0]['_id']
     print(object_id)
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
-    return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp))
+    return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
 if __name__ == '__main__':
