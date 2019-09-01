@@ -25,7 +25,6 @@ def example_get():
         json_arr.append(dumps(i))
     print(json_arr)
     return(jsonify(json_arr))
-    # return{'message': 'hello world'}
 
 
 
