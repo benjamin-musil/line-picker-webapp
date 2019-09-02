@@ -1,9 +1,6 @@
 from flask import Flask, jsonify
-from pymongo import MongoClient
-from bson.json_util import dumps
-from Models import User
+from Models import  Restaurant
 from Models import MongoDb
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -21,12 +18,11 @@ def example_get():
     # so that's really annoying
     collection = db['Test Restaurants ']
     tacos = collection.find({u'Category': u'Tacos'})
-    json_arr = []
+    restaurant_arr = []
     for i in tacos:
-        print(i)
-        json_arr.append(dumps(i))
-    print(json_arr)
-    return(jsonify(json_arr))
+        restaurant = Restaurant.from_document(i)
+        restaurant_arr.append(restaurant.__dict__)
+    return jsonify(restaurant_arr)
 
 
 if __name__ == '__main__':
