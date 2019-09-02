@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
-from Models import  Restaurant
-from Models import MongoDb
+from Models import Restaurant, MongoDb
 
 app = Flask(__name__)
 
