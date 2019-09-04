@@ -9,17 +9,17 @@ def example_function():
     pass
 
 
-@app.route('/', methods=['GET'])
-def example_get():
+@app.route('/category/<category>', methods=['GET'])
+def example_get(category):
     # for the connection to work you need dnspython
     db = MongoDb.mongo_client('Restaurants')
     # there is a space after the name, if you look on the website it doesn't look like there is though
     # so that's really annoying
     collection = db['Test Restaurants ']
-    tacos = collection.find({u'Category': u'Tacos'})
+    results = collection.find({u'Category': u''+category+''})
     restaurant_arr = []
-    for i in tacos:
-        restaurant = Restaurant.from_document(i)
+    for document in results:
+        restaurant = Restaurant.from_document(document)
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
 
