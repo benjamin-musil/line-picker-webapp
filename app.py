@@ -3,11 +3,26 @@ from Models import Restaurant, MongoDb
 
 app = Flask(__name__)
 
+# Can't do POST method until we have some kind of form that inputs data, since we're just testing db
+# interaction, we'll use the default GET for now
+# https://stackoverflow.com/questions/3477333/what-is-the-difference-between-post-and-get/3477374#3477374
+@app.route('/post/test',methods=['GET'])
+def example_post():
+    # for the connection to work you need dnspython
+    db = MongoDb.mongo_client('Restaurants')
+    collection = db['Users ']
+    
+    test_user = {
+        'username'      : 'Ben',
+        'email'         : 'benjamin.musil@gmail.com',
+        'password'      : 'hook3m',
+        'role'          : 'admin',
+        'favorite_food' : 'breakfast'
+    }
+    
+    post = collection.insert_one(test_restaurant)
 
-@app.route('/example/endpoint', methods=['POST'])
-def example_function():
-    pass
-
+    return{'message': 'Post successful'}
 
 @app.route('/category/<category>', methods=['GET'])
 def example_get(category):
