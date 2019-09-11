@@ -1,24 +1,57 @@
 from flask import Flask, request, jsonify
-from Models import Restaurant, MongoDb
+from Models import Restaurant, User, MongoDb
 
 app = Flask(__name__)
 
 # Can't do POST method until we have some kind of form that inputs data, since we're just testing db
-# interaction, we'll use the default GET for now
+# interaction, we'll use the default GET method for now
 # https://stackoverflow.com/questions/3477333/what-is-the-difference-between-post-and-get/3477374#3477374
-@app.route('/post/test', methods=['GET'])
-def example_post():
-    collection = MongoDb.mongo_collection('Users ')
-    test_user = {
-        'username'      : 'Ben',
-        'email'         : 'benjamin.musil@gmail.com',
-        'password'      : 'hook3m',
-        'role'          : 'admin',
-        'favorite_food' : 'breakfast'
-    }
-    collection.insert_one(test_user)
-    return{'message': 'Post successful'}
+# Good tutorial on flask POST https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
+@app.route('/post-user/<user>', methods=['GET','POST'])
+def post_user(user):
+    # get args from POST URL
+    user_id = request.args.get('user_id')
+    email = request.args.get('email')
+    password = request.args.get('password')
+    role = request.args.get('role')
+    favorite_food = request.args.get('favorite_food')
 
+    # pass args to json object to post
+    user_post = {
+        '_id': user_id,
+        'email': email,
+        'password': password,
+        'role': role,
+        'favorite_food': favorite_food
+    }
+
+    # connect to database and post
+    collection = MongoDb.mongo_collection('Users ')
+    collection.insert_one(user_post)
+    return 'Post successful!'
+
+# Future release should combine post-user and get-user functions, will need to add forms for POST
+@app.route('/get-user/<user>', methods=['GET', 'POST'])
+def get_user(user):
+    # connect to database and search for user specified
+    collection = MongoDb.mongo_collection('Users ')
+    results = collection.find({u'_id': u'' + user + ''})
+
+    # display users found by that unique username
+    # change this to be a singular return instead of a list
+    user_arr = []
+    for document in results:
+        print(document)
+        user_test = User.from_document(document)
+        user_arr.append(user_test.__dict__)
+    return jsonify(user_arr)
+
+@app.route('/delete-user/<user>', methods=['GET', 'POST'])
+def delete_user(user):
+    # connect to database and search for user specified
+    collection = MongoDb.mongo_collection('Users ')
+    results = collection.delete_one({u'_id': u'' + user + ''})
+    return str(user + ' deleted!')
 
 @app.route('/category/<category>', methods=['GET'])
 def example_get(category):
