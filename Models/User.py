@@ -8,7 +8,7 @@ class User:
 
 def from_document(document):
     """
-    Take a cursor object (document) and convert it to a Restaurant object
+    Take a cursor object (document) and convert it to a User object
     :param document: Document found from collection
     :return: Restaurant object
     """
