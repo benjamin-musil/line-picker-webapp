@@ -20,4 +20,6 @@ to interact between the user and the database.
   1) Run the Flask framework by running the app.py script first
   2) Test API methods by running tests/test_app.py next
   
-NATHAN UPDATE THIS FOR YOUR SCRIPT AND SANJAIS WHICH USES UNITTEST SO THAT THE TA CAN SEE AND TEST THOSE APIs
+<b>RUNNING UNIT TESTS:</b>
+  1) In pycharm go to the unit test file (these are located in /tests) and run the main method
+  2) If you are not in pycharm, simply run `python tests/test_restaurant.py` to run the unit tests for that file
