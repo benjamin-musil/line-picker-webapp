@@ -53,9 +53,10 @@ def test_search_RestaurantByName():
         print(res.json())
 
 if __name__ == '__main__':
+    test_post_user()
+    test_get_wait_by_restaurant()
+    test_get_restaurant_by_category()
     #test_post_user()
-    #test_get_wait_by_restaurant()
-    #test_get_restaurant_by_category()
     test_search_RestaurantByCategory()
     test_search_RestaurantByName()
 

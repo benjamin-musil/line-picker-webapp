@@ -8,12 +8,10 @@ app = Flask(__name__)
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
     reqJason = request.json
-    print(reqJason)
     collection = MongoDb.mongo_collection('Test Restaurants ')
     results = collection.find(reqJason)
     restaurant_arr = []
     for document in results:
-        print(document)
         restaurant = Restaurant.from_document(document)
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
