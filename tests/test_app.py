@@ -1,5 +1,6 @@
 import os
 import requests
+from flask import json
 
 
 def test_post_user():
@@ -39,8 +40,23 @@ def test_get_restaurant_by_category():
                      '\'5d63fbb41c9d440000acf1b4\', \'name\': \'Taco Bell\', \'wait_times\': \'Unknown\'}'
     assert one_restaurant in str(result.json())
 
+def test_search_RestaurantByCategory():
+    res = requests.get('http://127.0.0.1:5000/Search', json={u'Category': u'Chineese'})
+    assert res.json()[0]['category'] == "Chineese"
+    if res.ok:
+        print(res.json())
+
+def test_search_RestaurantByName():
+    res = requests.get('http://127.0.0.1:5000/Search', json={u'Name': u'Panda Express'})
+    assert res.json()[0]['category'] == "Chineese"
+    if res.ok:
+        print(res.json())
 
 if __name__ == '__main__':
     test_post_user()
     test_get_wait_by_restaurant()
     test_get_restaurant_by_category()
+    #test_post_user()
+    test_search_RestaurantByCategory()
+    test_search_RestaurantByName()
+

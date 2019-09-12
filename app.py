@@ -1,8 +1,20 @@
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 
 
 app = Flask(__name__)
+
+@app.route('/Search', methods=['GET'])
+def search_Restaurant():
+    reqJason = request.json
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    results = collection.find(reqJason)
+    restaurant_arr = []
+    for document in results:
+        restaurant = Restaurant.from_document(document)
+        restaurant_arr.append(restaurant.__dict__)
+    return jsonify(restaurant_arr)
 
 @app.route('/post-user/<user>', methods=['GET','POST'])
 def post_user(user):
@@ -92,6 +104,6 @@ def get_wait():
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
-
+  
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port='5000')
+    app.run(debug=False, host='localhost', port='5000')
