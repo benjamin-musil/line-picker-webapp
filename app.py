@@ -106,12 +106,6 @@ def get_wait():
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
-
-def mongodb_get():
-    uri = 'mongodb+srv://apt-6-admin:h00k3m@cluster0-wwuwc.mongodb.net/test?retryWrites=true&w=majority'
-    client = MongoClient(uri)
-    db = client['Restaurants']
-    return db
-
+  
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')
