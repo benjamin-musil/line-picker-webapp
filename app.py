@@ -1,8 +1,22 @@
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 
 
 app = Flask(__name__)
+
+@app.route('/Search', methods=['GET'])
+def search_Restaurant():
+    reqJason = request.json
+    print(reqJason)
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    results = collection.find(reqJason)
+    restaurant_arr = []
+    for document in results:
+        print(document)
+        restaurant = Restaurant.from_document(document)
+        restaurant_arr.append(restaurant.__dict__)
+    return jsonify(restaurant_arr)
 
 @app.route('/post-user/<user>', methods=['GET','POST'])
 def post_user(user):
@@ -93,24 +107,6 @@ def get_wait():
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
-@app.route('/', methods=['GET'])
-def example_get():
-    # for the connection to work you need dnspython
-    db = mongodb_get()
-    # there is a space after the name, if you look on the website it doesn't look like there is though
-    # so that's really annoying
-    collection = db['Test Restaurants ']
-    tacos = collection.find({u'Category': u'Tacos'})
-    json_arr = []
-    for i in tacos:
-        print(i)
-        json_arr.append(dumps(i))
-    print(json_arr)
-    return(jsonify(json_arr))
-    # return{'message': 'hello world'}
-
-
-
 def mongodb_get():
     uri = 'mongodb+srv://apt-6-admin:h00k3m@cluster0-wwuwc.mongodb.net/test?retryWrites=true&w=majority'
     client = MongoClient(uri)
@@ -118,4 +114,4 @@ def mongodb_get():
     return db
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port='5000')
+    app.run(debug=False, host='localhost', port='5000')
