@@ -3,10 +3,6 @@ from Models import Restaurant, User, MongoDb
 
 app = Flask(__name__)
 
-# Can't do POST method until we have some kind of form that inputs data, since we're just testing db
-# interaction, we'll use the default GET method for now
-# https://stackoverflow.com/questions/3477333/what-is-the-difference-between-post-and-get/3477374#3477374
-# Good tutorial on flask POST https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
 @app.route('/post-user/<user>', methods=['GET','POST'])
 def post_user(user):
     # get args from POST URL
