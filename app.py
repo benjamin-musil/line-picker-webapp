@@ -1,26 +1,43 @@
 from flask import Flask, request, jsonify
-from pymongo import MongoClient
+from Models import Restaurant, MongoDb
 
 
 app = Flask(__name__)
 
+# Can't do POST method until we have some kind of form that inputs data, since we're just testing db
+# interaction, we'll use the default GET for now
+# https://stackoverflow.com/questions/3477333/what-is-the-difference-between-post-and-get/3477374#3477374
+@app.route('/post/test', methods=['GET'])
+def example_post():
+    collection = MongoDb.mongo_collection('Users ')
+    test_user = {
+        'username'      : 'Ben',
+        'email'         : 'benjamin.musil@gmail.com',
+        'password'      : 'hook3m',
+        'role'          : 'admin',
+        'favorite_food' : 'breakfast'
+    }
+    collection.insert_one(test_user)
+    return{'message': 'Post successful'}
 
-def mongodb_get_restaurants():
-    uri = 'mongodb+srv://apt-6-admin:h00k3m@cluster0-wwuwc.mongodb.net/test?retryWrites=true&w=majority'
-    client = MongoClient(uri)
-    db = client['Restaurants']
-    collection_name = "Test Restaurants "
-    collection = db[collection_name]
-    return collection
+
+@app.route('/category/<category>', methods=['GET'])
+def example_get(category):
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    results = collection.find({u'Category': u''+category+''})
+    restaurant_arr = []
+    for document in results:
+        print(document)
+        restaurant = Restaurant.from_document(document)
+        restaurant_arr.append(restaurant.__dict__)
+    return jsonify(restaurant_arr)
 
 
-def mongo_get_wait_time_by_objectid(id):
-    uri = 'mongodb+srv://apt-6-admin:h00k3m@cluster0-wwuwc.mongodb.net/test?retryWrites=true&w=majority'
-    client = MongoClient(uri)
-    db = client['WaitTimes']
+def mongo_get_wait_time_by_objectid(restaurant_id):
+    db = MongoDb.mongo_database('WaitTimes')
     collection_name = "Test Wait Times"
     collection = db[collection_name]
-    items = collection.find({"RestaurantId": str(id)})
+    items = collection.find({"RestaurantId": str(restaurant_id)})
     json_arr = []
     for item in items:
         json_arr.append(item)
@@ -36,7 +53,7 @@ def get_wait():
     content = request.args
     name = content.get('Restaurant Name')
     address = content.get('Address')
-    collection = mongodb_get_restaurants()
+    collection = MongoDb.mongo_collection('Test Restaurants ')
     items = collection.find({"Address": address})
     json_arr = []
     for item in items:
