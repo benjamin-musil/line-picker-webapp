@@ -9,7 +9,7 @@
   })
 function fun(strSelection)
 {
-window.location.href="http://localhost:5000/ListAllRestaurant?select="+strSelection
+window.location.href="{{ url_for( 'ListAllRestaurant') }}" + "?select="+strSelection
 }
 </script>
 </head>
