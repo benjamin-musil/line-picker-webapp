@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template,session
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 import sys
 import requests
 import json
-
+import os
 
 app = Flask(__name__)
 
@@ -113,32 +113,26 @@ def get_wait():
 def RestaurantDetails():
     return render_template("Restaurantdetails.html")
 
-@app.route('/RenderAllRestaurant')
-def RenderAllRestaurant():
+@app.route('/ListAllRestaurant')
+def ListAllRestaurant():
     try:
+        if session.get('RestaurantCategory')  is None:
+            lstCategory= MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+            session['RestaurantCategory']=lstCategory
+        else:
+            lstCategory=session['RestaurantCategory']
+
         strSelect= request.args.get('select')
-        isItalian=''
-        isChinese=''
-        isMexican=''
-        isFastFood=''
-        isFamilyStyle=''
         if strSelect is None:
-             isItalian = 'active'
-        elif strSelect=='Italian':
-            isItalian='active'
-        elif strSelect=='Chinese':
-            isChinese='active'
-        elif strSelect=='Mexican':
-            isMexican='active'
-        elif strSelect=='FastFood':
-            isFastFood='active'
-        elif strSelect=='FamilyStyle':
-            isFamilyStyle='active'
+            SelectedTab = lstCategory[0]
+        else:
+            SelectedTab=strSelect
+
         jsonInput = {}
-        jsonInput['Category']=strSelect
+        jsonInput['Category']=SelectedTab
         res= search_Restaurant(jsonInput).response[0]
         data = json.loads(res)
-        UiContent = {'isItalian': isItalian, 'isChinese': isChinese, 'isMexican': isMexican, 'isFastFood': isFastFood, 'isFamilyStyle': isFamilyStyle}
+        UiContent = { 'SelectedTab': SelectedTab, 'RestaurantType':lstCategory}
         return render_template("AllRestaurant.html",UiContent=UiContent,restaurants=data)
     except:
         strException=sys.exc_info()
@@ -146,4 +140,5 @@ def RenderAllRestaurant():
 
 
 if __name__ == '__main__':
+    app.secret_key = os.urandom(24)
     app.run(debug=False, host='localhost', port='5000')
