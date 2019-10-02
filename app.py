@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
+from Routes.restaurant import restaurant_page
 
 
 app = Flask(__name__)
+app.register_blueprint(restaurant_page)
 
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
