@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script>
+  $(function () {
+    $('#myTab li:last-child a').tab('show')
+    alert()
+  })
+function fun(strSelection)
+{
+window.location.href="http://localhost:5000/RenderAllRestaurant?select="+strSelection
+}
+</script>
+</head>
+<body>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link {{UiContent.isItalian}}" id="italian-tab" data-toggle="tab" href="#italian" onclick="fun('Italian')"  role="tab" aria-controls="italian" aria-selected="true">Italian</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{UiContent.isChinese}}" id="Chinese-tab" data-toggle="tab" href="#Chinese"  onclick="fun('Chinese')"  role="tab" aria-controls="Chinese" aria-selected="false">Chinese</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{UiContent.isMexican}}" id="Mexican-tab" data-toggle="tab" href="#Mexican" onclick="fun('Mexican')" role="tab" aria-controls="Mexican" aria-selected="false">Mexican</a>
+  </li>
+      <li class="nav-item">
+    <a class="nav-link {{UiContent.isFastFood}}" id="FastFood-tab" data-toggle="tab" href="#FastFood" onclick="fun('FastFood')" role="tab" aria-controls="FastFood" aria-selected="false">FastFood</a>
+  </li>
+    <li class="nav-item">
+    <a class="nav-link {{UiContent.isFamilyStyle}}" id="FamilyStyle-tab" data-toggle="tab" href="#FamilyStyle" onclick="fun('FamilyStyle')" role="tab" aria-controls="FamilyStyle" aria-selected="false">Family Style</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+<!--  <div class="tab-pane {{UiContent.isItalian}}" id="italian" role="tabpanel" aria-labelledby="italian-tab">Italian</div>-->
+<!--  <div class="tab-pane {{UiContent.isChinese}}" id="Chinese" role="tabpanel" aria-labelledby="Chinese-tab">Chinese</div>-->
+<!--  <div class="tab-pane {{UiContent.isMexican}}" id="Mexican" role="tabpanel" aria-labelledby="Mexican-tab">Mexican</div>-->
+<!--  <div class="tab-pane {{UiContent.isFastFood}}" id="FastFood" role="tabpanel" aria-labelledby="FastFood-tab">FastFood</div>-->
+<!--    <div class="tab-pane {{UiContent.isFamilyStyle}}" id="FamilyStyle" role="tabpanel" aria-labelledby="FamilyStyle-tab">Family Style</div>-->
+    <div class="flight-container" style="overflow: auto; max-height: 80vh">
+            <div class="table-responsive">
+                <table class="table" id="Resstaurants">
+                    <thead>
+                        <tr>
+                            <th scope="col">Restaurant Name</th>
+                            <th scope="col">Wait Time(Minutes)</th>
+                            <th scope="col">Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for restaurant in restaurants %}
+                        <tr id={{ restaurant.id }}>
+                            <td scope="row"><a href= {{ url_for('RestaurantDetails' ,id=restaurant.id) }}>{{ restaurant.name }}</a></td>
+                            <td> {{restaurant.wait_times }} </td>
+                            <td> {{ restaurant.address }} </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

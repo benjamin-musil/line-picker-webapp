@@ -1,13 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
+import sys
+import requests
+import json
 
 
 app = Flask(__name__)
 
 @app.route('/Search', methods=['GET'])
-def search_Restaurant():
-    reqJason = request.json
+def search_Restaurant(reqJason):
+    if reqJason is None:
+     reqJason = request.json
+
     collection = MongoDb.mongo_collection('Test Restaurants ')
     results = collection.find(reqJason)
     restaurant_arr = []
@@ -104,6 +109,41 @@ def get_wait():
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
-  
+@app.route('/RestaurantDetails')
+def RestaurantDetails():
+    return render_template("Restaurantdetails.html")
+
+@app.route('/RenderAllRestaurant')
+def RenderAllRestaurant():
+    try:
+        strSelect= request.args.get('select')
+        isItalian=''
+        isChinese=''
+        isMexican=''
+        isFastFood=''
+        isFamilyStyle=''
+        if strSelect is None:
+             isItalian = 'active'
+        elif strSelect=='Italian':
+            isItalian='active'
+        elif strSelect=='Chinese':
+            isChinese='active'
+        elif strSelect=='Mexican':
+            isMexican='active'
+        elif strSelect=='FastFood':
+            isFastFood='active'
+        elif strSelect=='FamilyStyle':
+            isFamilyStyle='active'
+        jsonInput = {}
+        jsonInput['Category']=strSelect
+        res= search_Restaurant(jsonInput).response[0]
+        data = json.loads(res)
+        UiContent = {'isItalian': isItalian, 'isChinese': isChinese, 'isMexican': isMexican, 'isFastFood': isFastFood, 'isFamilyStyle': isFamilyStyle}
+        return render_template("AllRestaurant.html",UiContent=UiContent,restaurants=data)
+    except:
+        strException=sys.exc_info()
+
+
+
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')
