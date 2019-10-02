@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, abort, jsonify
-from Models import Restaurant, User, MongoDb
 import bson
+from flask import Blueprint, render_template
+from Models import Restaurant, MongoDb
+from Exceptions import exceptions
 
 restaurant_page = Blueprint('simple_page', __name__,
                         template_folder='Templates')
@@ -13,7 +14,7 @@ def get_restaurant(restaurant_id):
     restaurant = Restaurant.from_document(item)
     try:
         restaurant.wait_times = get_wait_times(restaurant_id)
-    except:
+    except exceptions.NoWaitFound:
         restaurant.wait_times = None
     return render_template('add_restuarant.html', restaurant=restaurant.__dict__,
                            wait_times=restaurant.__dict__['wait_times'])
@@ -26,8 +27,7 @@ def get_wait_times(restaurant_id):
     items = collection.find({"RestaurantId": str(restaurant_id)})
     json_arr = []
     json_arr.extend(items)
-    if len(json_arr) < 1:
-        raise Exception("not found")
+    if not json_arr:
+        raise exceptions.NoWaitFound()
     wait_time = json_arr[0]['WaitTime']
     return wait_time
-
