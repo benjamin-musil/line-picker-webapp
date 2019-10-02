@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 
-
+USERID =''
 app = Flask(__name__, template_folder='templates/')
 
 @app.route('/Search', methods=['GET'])
@@ -53,7 +53,8 @@ def get_user(user):
         print(document)
         user_test = User.from_document(document)
         user_arr.append(user_test.__dict__)
-    return jsonify(user_arr)
+    print(user_arr)
+    return user_arr
 
 @app.route('/delete-user/<user>', methods=['GET', 'POST'])
 def delete_user(user):
@@ -113,11 +114,28 @@ def login():
     user_info = get_user(user_id)
     if user_info:
         if user_info[0].get("password") != password:
-            render_template('error.html')
+            return render_template('error.html')
         else:
-            render_template('success_login.html')
+            global USERID
+            USERID = user_id
+            return render_template('success_login.html')
     else:
-        render_template('error.html')
+        return render_template('error.html')
+
+
+@app.route('/<userid>/mysubmissions', methods=['GET'])
+def get_by_username(userid):
+    print(USERID)
+    if USERID != userid:
+        return render_template('error.html')
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    results = collection.find({'ReportedBy': USERID})
+    restaurant_arr = []
+    for document in results:
+        print(document)
+        restaurant = Restaurant.from_document(document)
+        restaurant_arr.append(restaurant.__dict__)
+    return jsonify(restaurant_arr)
 
   
 if __name__ == '__main__':
