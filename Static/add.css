@@ -1,0 +1,17 @@
+h1{
+    text-align: center;
+}
+
+#wait_times {
+    display: grid;
+    grid-column-start: 2;
+}
+
+.carousel {
+    grid-column-start: 1;
+}
+
+#body {
+    display: grid;
+    grid-template-columns: 70%;
+}

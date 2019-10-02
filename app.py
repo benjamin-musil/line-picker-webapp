@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
+from Routes.restaurant import restaurant_page
 
-USERID =''
+USERID = ''
 app = Flask(__name__, template_folder='templates/')
-
+app.register_blueprint(restaurant_page)
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
     reqJason = request.json

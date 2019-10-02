@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="{{ url_for('static', filename='add_restaurant.js') }}" ></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+<div>
+    {% if restaurant %}
+<h1>{{ restaurant['name'] }}, {{restaurant['address']}}</h1>
+    {% endif %}
+<div id="body">
+
+    <br /><br />
+  <div class="carousel">
+    <a class="carousel-item" href="#one!"><img src="https://lorempixel.com/250/250/nature/1"></a>
+    <a class="carousel-item" href="#two!"><img src="https://lorempixel.com/250/250/nature/2"></a>
+    <a class="carousel-item" href="#three!"><img src="https://lorempixel.com/250/250/nature/3"></a>
+    <a class="carousel-item" href="#four!"><img src="https://lorempixel.com/250/250/nature/4"></a>
+    <a class="carousel-item" href="#five!"><img src="https://lorempixel.com/250/250/nature/5"></a>
+  </div>
+<div id="wait_times">
+<table>
+    <tr>
+        <th>Wait Time</th>
+        <th>Reported</th>
+    </tr>
+
+    {% if wait_times %}
+    {% for time, date in wait_times %}
+    <tr>
+    <td>{{time}}</td>
+    <td>{{ date }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+</table>
+    <br /><br />
+    <button>Submit Wait Time</button>
+</div>
+<div id="Reviews">
+    Reviews
+    <br />
+    <br />
+    <button>Submit your Review</button>
+</div>
+<button>back</button>
+</div>
+</div>
+</body>
+</html>
