@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, render_template
-from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
-from Routes.restaurant import restaurant_page
+from Routes.restaurant_route import restaurant_page
 
 USERID = ''
 app = Flask(__name__, template_folder='templates/')
@@ -17,7 +16,7 @@ def search_Restaurant():
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
 
-@app.route('/post-user/<user>', methods=['GET','POST'])
+@app.route('/post-user/<user>', methods=['GET', 'POST'])
 def post_user(user):
     # get args from POST URL
     user_id = request.args.get('user_id')
@@ -107,6 +106,7 @@ def get_wait():
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
+<<<<<<< HEAD
 @app.route('/login', methods=['POST'])
 def login():
     content = request.form
@@ -144,5 +144,7 @@ def input():
     return render_template('login.html')
 
 
+=======
+>>>>>>> adding scroll to wait time table
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')

@@ -3,7 +3,7 @@ h1{
 }
 
 #wait_times {
-    display: grid;
+    align-self: center;
     grid-column-start: 2;
 }
 
@@ -14,4 +14,38 @@ h1{
 #body {
     display: grid;
     grid-template-columns: 70%;
+}
+
+th{
+    width: 50%;
+}
+
+#submit_wait {
+    display: block;
+    margin: auto;
+    cursor: pointer;
+    border-radius: 16px;
+    padding: 4%;
+    background-color: green;
+}
+
+#Reviews {
+    width: 70%;
+    border: 1px black solid;
+}
+
+#back {
+    cursor: pointer;
+    border-radius: 16px;
+    background-color: blue;
+    color: white;
+}
+
+.button:active {
+  background-color: #3e8e41;
+}
+
+#scrollit {
+    overflow:scroll;
+    height:200px;
 }
