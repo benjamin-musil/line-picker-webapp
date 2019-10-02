@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates/')
 
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
@@ -44,7 +44,7 @@ def post_user(user):
 def get_user(user):
     # connect to database and search for user specified
     collection = MongoDb.mongo_collection('Users ')
-    results = collection.find({u'_id': u'' + user + ''})
+    results = collection.find({'user_id': user})
 
     # display users found by that unique username
     # change this to be a singular return instead of a list
@@ -103,6 +103,21 @@ def get_wait():
     print(object_id)
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    content = request.json
+    user_id = content['user_id']
+    password = content['password']
+    user_info = get_user(user_id)
+    if user_info:
+        if user_info[0].get("password") != password:
+            render_template('error.html')
+        else:
+            render_template('success_login.html')
+    else:
+        render_template('error.html')
 
   
 if __name__ == '__main__':
