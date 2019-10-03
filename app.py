@@ -108,8 +108,8 @@ def get_wait():
 
 @app.route('/login', methods=['POST'])
 def login():
-    content = request.json
-    user_id = content['user_id']
+    content = request.form
+    user_id = content['userid']
     password = content['password']
     user_info = get_user(user_id)
     if user_info:
@@ -135,8 +135,13 @@ def get_by_username(userid):
         print(document)
         restaurant = Restaurant.from_document(document)
         restaurant_arr.append(restaurant.__dict__)
-    return jsonify(restaurant_arr)
+    return render_template('mysubmissions_result.html', restaurant_arr=restaurant_arr)
 
-  
+
+@app.route('/')
+def input():
+    return render_template('login.html')
+
+
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')
