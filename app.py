@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template,session
+from flask import Flask, request, jsonify, render_template, session
 from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 import sys
@@ -8,10 +8,11 @@ import os
 
 app = Flask(__name__)
 
+
 @app.route('/Search', methods=['GET'])
 def search_Restaurant(reqJason):
     if reqJason is None:
-     reqJason = request.json
+        reqJason = request.json
 
     collection = MongoDb.mongo_collection('Test Restaurants ')
     results = collection.find(reqJason)
@@ -21,7 +22,8 @@ def search_Restaurant(reqJason):
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
 
-@app.route('/post-user/<user>', methods=['GET','POST'])
+
+@app.route('/post-user/<user>', methods=['GET', 'POST'])
 def post_user(user):
     # get args from POST URL
     user_id = request.args.get('user_id')
@@ -44,6 +46,7 @@ def post_user(user):
     collection.insert_one(user_post)
     return 'Post successful!'
 
+
 # Future release should combine post-user and get-user functions, will need to add forms for POST
 @app.route('/get-user/<user>', methods=['GET', 'POST'])
 def get_user(user):
@@ -60,6 +63,7 @@ def get_user(user):
         user_arr.append(user_test.__dict__)
     return jsonify(user_arr)
 
+
 @app.route('/delete-user/<user>', methods=['GET', 'POST'])
 def delete_user(user):
     # connect to database and search for user specified
@@ -67,10 +71,11 @@ def delete_user(user):
     results = collection.delete_one({u'_id': u'' + user + ''})
     return str(user + ' deleted!')
 
+
 @app.route('/category/<category>', methods=['GET'])
 def example_get(category):
     collection = MongoDb.mongo_collection('Test Restaurants ')
-    results = collection.find({u'Category': u''+category+''})
+    results = collection.find({u'Category': u'' + category + ''})
     restaurant_arr = []
     for document in results:
         print(document)
@@ -109,34 +114,45 @@ def get_wait():
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
+
 @app.route('/RestaurantDetails')
 def RestaurantDetails():
     return render_template("Restaurantdetails.html")
 
+
 @app.route('/ListAllRestaurant')
 def ListAllRestaurant():
     try:
-        if session.get('RestaurantCategory')  is None:
-            lstCategory= MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-            session['RestaurantCategory']=lstCategory
+        if session.get('RestaurantCategory') is None:
+            lstCategory = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+            session['RestaurantCategory'] = lstCategory
         else:
-            lstCategory=session['RestaurantCategory']
+            lstCategory = session['RestaurantCategory']
 
-        strSelect= request.args.get('select')
+        strSelect = request.args.get('select')
         if strSelect is None:
-            SelectedTab = lstCategory[0]
+            # Empty table at startup
+            SelectedTab = ''
+        elif strSelect == 'All':
+            # need to reorganize this, but bedtime and I'm pushing this lol - Ben
+            SelectedTab = strSelect
+            jsonInput = {}
+            jsonInput['Category'] = SelectedTab
+            res = search_Restaurant({}).response[0]
+            data = json.loads(res)
+            UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
+            return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
         else:
-            SelectedTab=strSelect
+            SelectedTab = strSelect
 
         jsonInput = {}
-        jsonInput['Category']=SelectedTab
-        res= search_Restaurant(jsonInput).response[0]
+        jsonInput['Category'] = SelectedTab
+        res = search_Restaurant(jsonInput).response[0]
         data = json.loads(res)
-        UiContent = { 'SelectedTab': SelectedTab, 'RestaurantType':lstCategory}
-        return render_template("AllRestaurant.html",UiContent=UiContent,restaurants=data)
+        UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
+        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
     except:
-        strException=sys.exc_info()
-
+        strException = sys.exc_info()
 
 
 if __name__ == '__main__':
