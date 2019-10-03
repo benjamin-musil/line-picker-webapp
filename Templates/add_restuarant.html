@@ -44,6 +44,7 @@
 </div>
     <br /><br />
     <button id="submit_wait">Submit Wait Time</button>
+
 </div>
 </div>
 <div id="Reviews">
@@ -61,5 +62,31 @@
 <button id="back">back</button>
 </div>
 
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div id="modalContent" class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>Submit Wait</h2>
+    </div>
+    <div class="modal-body">
+        <form action="/restuarant/submit-time" method="post">
+      <p>{{ restaurant['name'] }} <br />
+       {{restaurant['address']}}</p>
+        <p>How long was the wait? (in minutes)</p>
+        <input type="hidden" name="Id" value={{ restaurant['id'] }}>
+        <input type="number" name="wait" min="0" max="199"><br />
+            <button id="submit">Submit</button>
+        </form>
+    </div>
+    <div id="footer" class="modal-footer">
+
+    </div>
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='modal.js') }}" ></script>
 </body>
 </html>

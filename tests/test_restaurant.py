@@ -1,5 +1,6 @@
 import unittest
-from Models.Restaurant import from_document
+import datetime
+from Models.Restaurant import from_document, submit_wait_time
 
 
 class MyTestCase(unittest.TestCase):
@@ -8,6 +9,9 @@ class MyTestCase(unittest.TestCase):
                     'Category': 'Tacos', 'WaitTime': 'Unknown'}
         restaurant = from_document(expected)
         self.assertEqual(restaurant.name, 'Taco Bell')
+
+    def test_submit_wait(self):
+        submit_wait_time("5d64a2af1c9d440000f35b69", 10, datetime.datetime.now())
 
 
 

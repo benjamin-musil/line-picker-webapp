@@ -1,10 +1,11 @@
 import bson
-from flask import Blueprint, render_template
+import datetime
+from flask import Blueprint, render_template, request, redirect
 from Models import Restaurant, MongoDb
 from Exceptions import exceptions
 
 restaurant_page = Blueprint('simple_page', __name__,
-                        template_folder='Templates')
+                            template_folder='Templates')
 
 
 @restaurant_page.route('/restaurant/<restaurant_id>')
@@ -18,6 +19,19 @@ def get_restaurant(restaurant_id):
         restaurant.wait_times = None
     return render_template('add_restuarant.html', restaurant=restaurant.__dict__,
                            wait_times=restaurant.__dict__['wait_times'])
+
+
+@restaurant_page.route('/restuarant/submit-time', methods=['GET', 'POST'])
+def submit_wait_time():
+    dict = request.form
+    for key in dict:
+        print(
+            'form key ' + dict[key] + ' means ' + key)
+
+    id = dict['Id']
+    time = dict['wait']
+    Restaurant.submit_wait_time(id, time, datetime.datetime.now())
+    return redirect('/restaurant/' + id)
 
 
 def get_wait_times(restaurant_id):
