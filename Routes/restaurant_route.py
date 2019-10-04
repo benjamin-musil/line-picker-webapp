@@ -40,7 +40,7 @@ def add_restaurant():
 def submit_restaurant():
     form_args = request.form
     print(form_args)
-    restaurant = Restaurant.Restaurant('', form_args['Name'],  form_args['Address'], 'Taco', 'uk')
+    restaurant = Restaurant.Restaurant('', form_args['Name'],  form_args['Address'], form_args['category'], '-')
     restaurant.add_to_db()
     return redirect('/add-restaurant/')
 

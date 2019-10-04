@@ -9,6 +9,7 @@ def mongo_database(database):
     """
     uri = 'mongodb+srv://apt-6-admin:h00k3m@cluster0-wwuwc.mongodb.net/test?retryWrites=true&w=majority'
     client = MongoClient(uri)
+    client.start_session()
     db = client[database]
     return db
 

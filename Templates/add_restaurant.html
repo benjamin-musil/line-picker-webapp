@@ -15,22 +15,22 @@
     <input type="text" name="Address" placeholder="Address" id="address">
     <h3>Restaurant Category</h3>
     <div id="checkboxes">
-    <input type="checkbox" name="Taco">
+    <input type="radio" name="category" value="Taco">
     <label for="Taco">Taco</label>
     <br />
-    <input type="checkbox" name="Chinese">
+    <input type="radio" name="category" value="Chinese">
     <label for="Chinese">Chinese</label>
     <br />
-    <input type="checkbox" name="Burger">
+    <input type="radio" name="category" value="Burger">
     <label for="Burger">Burger</label>
     <br />
-    <input type="checkbox" name="Salad">
+    <input type="radio" name="category" value="Salad">
     <label for="Salad">Salad</label>
     <br />
-    <input type="checkbox" name="Breakfast">
+    <input type="radio" name="category" value="Breakfast">
     <label for="Breakfast">Breakfast</label>
     <br />
-    <input type="checkbox" name="Other"id="other">
+    <input type="radio" name="category"id="other">
         <label for="other">Other</label>
         <br />
     <input type="text" id="other_explained" hidden="hidden">
@@ -39,18 +39,22 @@
         </form>
     <button>back</button>
       <script type="text/javascript">
-    $(function()
-    {
-      $('[name="Other"]').change(function()
-      {
-        if ($(this).is(':checked')) {
-           // Do something...
-           document.getElementById("other_explained").hidden = false
+
+       $(document).ready(function(){
+
+        $("input[type='radio']").click(function(){
+
+            var radioValue = $("input[id='other']:checked").val();
+
+            if(radioValue){
+
+                 document.getElementById("other_explained").hidden = false
         } else {
             document.getElementById("other_explained").hidden = true
         }
 
-      });
+        });
+
     });
   </script>
 </div>
