@@ -106,7 +106,6 @@ def get_wait():
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
-<<<<<<< HEAD
 @app.route('/login', methods=['POST'])
 def login():
     content = request.form
@@ -144,7 +143,5 @@ def input():
     return render_template('login.html')
 
 
-=======
->>>>>>> adding scroll to wait time table
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')
