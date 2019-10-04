@@ -6,6 +6,7 @@ class User:
         self.role = role
         self.favorite_food = favorite_food
 
+
 def from_document(document):
     """
     Take a cursor object (document) and convert it to a User object

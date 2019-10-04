@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, render_template
-from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
+from Routes.restaurant_route import restaurant_page
 
-USERID =''
+USERID = ''
 app = Flask(__name__, template_folder='templates/')
+app.register_blueprint(restaurant_page)
+
 
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
@@ -16,7 +18,8 @@ def search_Restaurant():
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
 
-@app.route('/post-user/<user>', methods=['GET','POST'])
+
+@app.route('/post-user/<user>', methods=['GET', 'POST'])
 def post_user(user):
     # get args from POST URL
     user_id = request.args.get('user_id')
@@ -56,15 +59,17 @@ def get_user(user):
     print(user_arr)
     return user_arr
 
+
 @app.route('/delete-user/<user>', methods=['GET', 'POST'])
 def delete_user(user):
     # connect to database and search for user specified
     collection = MongoDb.mongo_collection('Users ')
-    results = collection.delete_one({u'_id': u'' + user + ''})
+    collection.delete_one({u'_id': u'' + user + ''})
     return str(user + ' deleted!')
 
+
 @app.route('/category/<category>', methods=['GET'])
-def example_get(category):
+def get_category(category):
     collection = MongoDb.mongo_collection('Test Restaurants ')
     results = collection.find({u'Category': u''+category+''})
     restaurant_arr = []
