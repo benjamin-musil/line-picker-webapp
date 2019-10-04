@@ -5,6 +5,7 @@ from Routes.restaurant_route import restaurant_page
 USERID = ''
 app = Flask(__name__, template_folder='templates/')
 app.register_blueprint(restaurant_page)
+
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
     reqJason = request.json
