@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect
 from Models import Restaurant, MongoDb
 from Exceptions import exceptions
 
-restaurant_page = Blueprint('simple_page', __name__,
+restaurant_page = Blueprint('restaurant_page', __name__,
                             template_folder='templates')
 
 
