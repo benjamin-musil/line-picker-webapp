@@ -5,7 +5,7 @@ from Models import Restaurant, MongoDb
 from Exceptions import exceptions
 
 restaurant_page = Blueprint('simple_page', __name__,
-                            template_folder='Templates')
+                            template_folder='templates')
 
 
 @restaurant_page.route('/restaurant/<restaurant_id>')
