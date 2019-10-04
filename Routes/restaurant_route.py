@@ -1,5 +1,5 @@
-import bson
 import datetime
+import bson
 from flask import Blueprint, render_template, request, redirect
 from Models import Restaurant, MongoDb
 from Exceptions import exceptions
@@ -14,20 +14,19 @@ def get_restaurant(restaurant_id):
     item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
     restaurant = Restaurant.from_document(item)
     try:
-        restaurant.wait_times = get_wait_times(restaurant_id)
+        restaurant.wait_times = Restaurant.get_wait_times(restaurant_id)
     except exceptions.NoWaitFound:
         restaurant.wait_times = None
-    return render_template('restuarant.html', restaurant=restaurant.__dict__,
+    return render_template('restaurant.html', restaurant=restaurant.__dict__,
                            wait_times=restaurant.__dict__['wait_times'])
 
 
-@restaurant_page.route('/restuarant/submit-time', methods=['GET', 'POST'])
+@restaurant_page.route('/restaurant/submit-time', methods=['GET', 'POST'])
 def submit_wait_time():
     form_args = request.form
-
     restaurant_id = form_args['Id']
-    time = form_args['wait']
-    Restaurant.submit_wait_time(restaurant_id, time, datetime.datetime.now())
+    wait_time = form_args['wait']
+    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now())
     return redirect('/restaurant/' + restaurant_id)
 
 
@@ -39,23 +38,6 @@ def add_restaurant():
 @restaurant_page.route('/submit-restaurant/', methods=['POST'])
 def submit_restaurant():
     form_args = request.form
-    print(form_args)
-    restaurant = Restaurant.Restaurant('', form_args['Name'],  form_args['Address'], form_args['category'], '-')
-
-    restaurant.add_to_db()
-    return redirect('/add-restaurant/')
-
-
-
-
-def get_wait_times(restaurant_id):
-    db = MongoDb.mongo_database('WaitTimes')
-    collection_name = "Test Wait Times"
-    collection = db[collection_name]
-    items = collection.find({"RestaurantId": str(restaurant_id)})
-    json_arr = []
-    json_arr.extend(items)
-    if not json_arr:
-        raise exceptions.NoWaitFound()
-    wait_time = json_arr[0]['WaitTime']
-    return wait_time
+    restaurant = Restaurant.Restaurant('', form_args['Name'], form_args['Address'], form_args['category'], '-')
+    new_id = restaurant.add_to_db()
+    return redirect('/restaurant/' + str(new_id))

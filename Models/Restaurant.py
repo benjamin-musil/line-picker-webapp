@@ -1,4 +1,5 @@
 from Models import MongoDb
+from Exceptions import exceptions
 
 
 class Restaurant:
@@ -17,7 +18,7 @@ class Restaurant:
             'Category': self.category,
             'WaitTimes': 'unknown'
         }
-        collection.insert_one(obj)
+        return collection.insert_one(obj).inserted_id
 
 
 def from_document(document):
@@ -50,3 +51,21 @@ def submit_wait_time(restuarant_id, wait_time, time):
         }
         collection.insert_one(wait_post)
 
+
+def get_wait_times(restaurant_id):
+    """
+    Get the wait times of a restaurant
+    :param restaurant_id:
+    :return: An array of wait times
+    :raises: No Wait Time found
+    """
+    db = MongoDb.mongo_database('WaitTimes')
+    collection_name = "Test Wait Times"
+    collection = db[collection_name]
+    items = collection.find({"RestaurantId": str(restaurant_id)})
+    json_arr = []
+    json_arr.extend(items)
+    if not json_arr:
+        raise exceptions.NoWaitFound()
+    wait_time = json_arr[0]['WaitTime']
+    return wait_time

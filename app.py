@@ -61,7 +61,7 @@ def get_user(user):
 def delete_user(user):
     # connect to database and search for user specified
     collection = MongoDb.mongo_collection('Users ')
-    results = collection.delete_one({u'_id': u'' + user + ''})
+    collection.delete_one({u'_id': u'' + user + ''})
     return str(user + ' deleted!')
 
 @app.route('/category/<category>', methods=['GET'])
