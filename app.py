@@ -6,6 +6,7 @@ USERID = ''
 app = Flask(__name__, template_folder='templates/')
 app.register_blueprint(restaurant_page)
 
+
 @app.route('/Search', methods=['GET'])
 def search_Restaurant():
     reqJason = request.json
@@ -16,6 +17,7 @@ def search_Restaurant():
         restaurant = Restaurant.from_document(document)
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
+
 
 @app.route('/post-user/<user>', methods=['GET', 'POST'])
 def post_user(user):
@@ -57,6 +59,7 @@ def get_user(user):
     print(user_arr)
     return user_arr
 
+
 @app.route('/delete-user/<user>', methods=['GET', 'POST'])
 def delete_user(user):
     # connect to database and search for user specified
@@ -64,8 +67,9 @@ def delete_user(user):
     collection.delete_one({u'_id': u'' + user + ''})
     return str(user + ' deleted!')
 
+
 @app.route('/category/<category>', methods=['GET'])
-def example_get(category):
+def get_category(category):
     collection = MongoDb.mongo_collection('Test Restaurants ')
     results = collection.find({u'Category': u''+category+''})
     restaurant_arr = []
