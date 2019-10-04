@@ -119,38 +119,80 @@ def get_wait():
 def RestaurantDetails():
     return render_template("Restaurantdetails.html")
 
+# Route here when using search bar
+@app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
+def SearchByName():
+    # Get all restaurant categories
+    if session.get('RestaurantCategory') is None:
+        lstCategory = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+        session['RestaurantCategory'] = lstCategory
+    else:
+        lstCategory = session['RestaurantCategory']
 
-@app.route('/ListAllRestaurant')
+    # Match search query to name of restaurant
+    tag = request.args.get('restaurant_tag')
+    res = search_Restaurant({'Name': tag}).response[0]
+    data = json.loads(res)
+
+    # Pass a blank tab to load the template page
+    UiContent = {'SelectedTab': '', 'RestaurantType': lstCategory}
+    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+
+# Route here for getting restaurants based on category
+@app.route('/ListAllRestaurant', methods=['GET', 'POST'])
 def ListAllRestaurant():
     try:
+        # Get all restaurant categories
         if session.get('RestaurantCategory') is None:
             lstCategory = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
             session['RestaurantCategory'] = lstCategory
         else:
             lstCategory = session['RestaurantCategory']
 
+        # Get selected restaurant category tab
         strSelect = request.args.get('select')
+
         if strSelect is None:
             # Empty table at startup
             SelectedTab = ''
-        elif strSelect == 'All':
-            # need to reorganize this, but bedtime and I'm pushing this lol - Ben
-            SelectedTab = strSelect
-            jsonInput = {}
-            jsonInput['Category'] = SelectedTab
-            res = search_Restaurant({}).response[0]
-            data = json.loads(res)
-            UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
-            return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
         else:
             SelectedTab = strSelect
 
         jsonInput = {}
         jsonInput['Category'] = SelectedTab
-        res = search_Restaurant(jsonInput).response[0]
+
+        if strSelect == 'All':
+            # Get all restaurants for All category
+            res = search_Restaurant({}).response[0]
+        else:
+            # Get all restaurants for a specific category
+            res = search_Restaurant(jsonInput).response[0]
+
         data = json.loads(res)
         UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+
+        # if strSelect is None:
+        #     # Empty table at startup
+        #     SelectedTab = ''
+        # elif strSelect == 'All':
+        #     # need to reorganize this, but bedtime and I'm pushing this lol - Ben
+        #     SelectedTab = strSelect
+        #     jsonInput = {}
+        #     jsonInput['Category'] = SelectedTab
+        #     res = search_Restaurant({}).response[0]
+        #     data = json.loads(res)
+        #     UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
+        #     return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+        # else:
+        #     SelectedTab = strSelect
+        #
+        # jsonInput = {}
+        # jsonInput['Category'] = SelectedTab
+        # res = search_Restaurant(jsonInput).response[0]
+        # data = json.loads(res)
+        # UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
+        # return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
     except:
         strException = sys.exc_info()
 

@@ -16,10 +16,10 @@ window.location.href="{{ url_for( 'ListAllRestaurant') }}" + "?select="+strSelec
 <body>
 
 <div id="search_bar">
-		<form>
+		<form action="ListAllRestaurant/Search" method="get">
 			Search for a Restaurant
-			<input type="text" placeholder="Search by name..." name="restaurant_name" method="get">
-			<button id="search-by-name">Search Restaurant</button>
+			<input type="text" placeholder="Search by name..." name="restaurant_tag" method="get">
+			<button id="search-by-tag">Search Restaurant</button>
 		</form>
 </div>
 
@@ -33,7 +33,9 @@ window.location.href="{{ url_for( 'ListAllRestaurant') }}" + "?select="+strSelec
             </li>
             {% for restaurantType in UiContent.RestaurantType %}
             <li class="nav-item">
-                <a class="nav-link  {% if UiContent.SelectedTab == restaurantType %} active {% endif %}" id="{{ restaurantType }}" href="#" onclick="fun('{{ restaurantType }}')" role="tab">{{ restaurantType }}</a>
+                <a class="nav-link  {% if UiContent.SelectedTab == restaurantType %}
+                 active {% endif %}" id="{{ restaurantType }}" href="#" onclick="fun('{{ restaurantType }}')"
+                   role="tab">{{ restaurantType }}</a>
             </li>
             {% endfor %}
         </ul>
