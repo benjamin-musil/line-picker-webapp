@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a Restaurant</title>
+</head>
+<body onload="clearForm()">
+<script src="{{ url_for('static', filename='add_restaurant.js') }}"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.5.2.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css') }}" />
+<div>
+    <h1>Add a Restaurant</h1>
+    <form action="/submit-restaurant/" method="post">
+    <input type="text" name="Name" placeholder="Name of Restaurant" id="name"><br /><br />
+    <input type="text" name="Address" placeholder="Address" id="address">
+    <h3>Restaurant Category</h3>
+    <div id="checkboxes">
+    <input type="checkbox" name="Taco">
+    <label for="Taco">Taco</label>
+    <br />
+    <input type="checkbox" name="Chinese">
+    <label for="Chinese">Chinese</label>
+    <br />
+    <input type="checkbox" name="Burger">
+    <label for="Burger">Burger</label>
+    <br />
+    <input type="checkbox" name="Salad">
+    <label for="Salad">Salad</label>
+    <br />
+    <input type="checkbox" name="Breakfast">
+    <label for="Breakfast">Breakfast</label>
+    <br />
+    <input type="checkbox" name="Other"id="other">
+        <label for="other">Other</label>
+        <br />
+    <input type="text" id="other_explained" hidden="hidden">
+    </div>
+    <button id="submit">Add Restaurant</button><br />
+        </form>
+    <button>back</button>
+      <script type="text/javascript">
+    $(function()
+    {
+      $('[name="Other"]').change(function()
+      {
+        if ($(this).is(':checked')) {
+           // Do something...
+           document.getElementById("other_explained").hidden = false
+        } else {
+            document.getElementById("other_explained").hidden = true
+        }
+
+      });
+    });
+  </script>
+</div>
+</body>
+</html>
