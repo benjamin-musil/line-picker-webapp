@@ -17,21 +17,34 @@ def get_restaurant(restaurant_id):
         restaurant.wait_times = get_wait_times(restaurant_id)
     except exceptions.NoWaitFound:
         restaurant.wait_times = None
-    return render_template('add_restuarant.html', restaurant=restaurant.__dict__,
+    return render_template('restuarant.html', restaurant=restaurant.__dict__,
                            wait_times=restaurant.__dict__['wait_times'])
 
 
 @restaurant_page.route('/restuarant/submit-time', methods=['GET', 'POST'])
 def submit_wait_time():
-    dict = request.form
-    for key in dict:
-        print(
-            'form key ' + dict[key] + ' means ' + key)
+    form_args = request.form
 
-    id = dict['Id']
-    time = dict['wait']
-    Restaurant.submit_wait_time(id, time, datetime.datetime.now())
-    return redirect('/restaurant/' + id)
+    restaurant_id = form_args['Id']
+    time = form_args['wait']
+    Restaurant.submit_wait_time(restaurant_id, time, datetime.datetime.now())
+    return redirect('/restaurant/' + restaurant_id)
+
+
+@restaurant_page.route('/add-restaurant/', methods=['GET'])
+def add_restaurant():
+    return render_template('add_restaurant.html')
+
+
+@restaurant_page.route('/submit-restaurant/', methods=['POST'])
+def submit_restaurant():
+    form_args = request.form
+    print(form_args)
+    restaurant = Restaurant.Restaurant('', form_args['Name'],  form_args['Address'], 'Taco', 'uk')
+    restaurant.add_to_db()
+    return redirect('/add-restaurant/')
+
+
 
 
 def get_wait_times(restaurant_id):

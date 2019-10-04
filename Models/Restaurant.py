@@ -1,5 +1,3 @@
-import pymongo
-
 from Models import MongoDb
 
 
@@ -10,6 +8,16 @@ class Restaurant:
         self.address = address
         self.category = category
         self.wait_times = wait_times
+
+    def add_to_db(self):
+        collection = MongoDb.mongo_collection('Test Restaurants ')
+        obj = {
+            'Name': self.name,
+            'Address': self.address,
+            'Category': self.category,
+            'WaitTimes': 'unknown'
+        }
+        collection.insert_one(obj)
 
 
 def from_document(document):
@@ -32,7 +40,8 @@ def submit_wait_time(restuarant_id, wait_time, time):
     :return:
     """
     collection = MongoDb.mongo_collection('Test Wait Times', database_name='WaitTimes')
-    if collection.find_one_and_update({"RestaurantId": str(restuarant_id)}, {'$push': {'WaitTime': [wait_time, str(time)]}}, {'_id': False} ) \
+    if collection.find_one_and_update({"RestaurantId": str(restuarant_id)},
+                                      {'$push': {'WaitTime': [wait_time, str(time)]}}, {'_id': False}) \
             is None:
         # submit the wait for the first time
         wait_post = {
