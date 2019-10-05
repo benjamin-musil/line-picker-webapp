@@ -12,6 +12,12 @@ app.secret_key = os.urandom(24)
 app.register_blueprint(restaurant_page)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('not_found.html'), 404
+
+
 @app.route('/Search', methods=['GET'])
 def search_Restaurant(reqJason):
     if reqJason is None:
