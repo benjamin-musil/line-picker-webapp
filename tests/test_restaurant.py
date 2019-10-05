@@ -10,6 +10,5 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(restaurant.name, 'Taco Bell')
 
 
-
 if __name__ == '__main__':
     unittest.main()

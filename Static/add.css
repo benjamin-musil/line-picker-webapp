@@ -1,0 +1,30 @@
+h1 {
+    text-align: center;
+}
+
+h3 {
+    padding-left: 3%;
+}
+
+button {
+    margin-left: 3%;
+    border-radius: 16px;
+    background-color: blue;
+    cursor: pointer;
+    width: 5%;
+}
+
+#name, #address {
+    width: 30%;
+    margin-left: 3%;
+}
+
+#checkboxes {
+    padding-left: 3%;
+}
+
+#submit {
+    display: block;
+    border-radius: 16px;
+    background-color: green;
+}
