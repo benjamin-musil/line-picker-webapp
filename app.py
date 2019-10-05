@@ -127,10 +127,10 @@ def RestaurantDetails():
 def SearchByName():
     # Get all restaurant categories
     if session.get('RestaurantCategory') is None:
-        lstCategory = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-        session['RestaurantCategory'] = lstCategory
+        categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+        session['RestaurantCategory'] = categories
     else:
-        lstCategory = session['RestaurantCategory']
+        categories = session['RestaurantCategory']
 
     # Match search query to name of restaurant
     tag = request.args.get('restaurant_tag')
@@ -138,7 +138,7 @@ def SearchByName():
     data = json.loads(res)
 
     # Pass a blank tab to load the template page
-    UiContent = {'SelectedTab': '', 'RestaurantType': lstCategory}
+    UiContent = {'SelectedTab': '', 'RestaurantType': categories}
     return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
 
 # Route here for getting restaurants based on category
@@ -147,24 +147,24 @@ def ListAllRestaurant():
     try:
         # Get all restaurant categories
         if session.get('RestaurantCategory') is None:
-            lstCategory = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-            session['RestaurantCategory'] = lstCategory
+            categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+            session['RestaurantCategory'] = categories
         else:
-            lstCategory = session['RestaurantCategory']
+            categories = session['RestaurantCategory']
 
         # Get selected restaurant category tab
-        strSelect = request.args.get('select')
+        selected_category = request.args.get('select')
 
-        if strSelect is None:
+        if selected_category is None:
             # Empty table at startup
             SelectedTab = ''
         else:
-            SelectedTab = strSelect
+            SelectedTab = selected_category
 
         jsonInput = {}
         jsonInput['Category'] = SelectedTab
 
-        if strSelect == 'All':
+        if selected_category == 'All':
             # Get all restaurants for All category
             res = search_Restaurant({}).response[0]
         else:
@@ -172,7 +172,7 @@ def ListAllRestaurant():
             res = search_Restaurant(jsonInput).response[0]
 
         data = json.loads(res)
-        UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
+        UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': categories}
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
     except:
         strException = sys.exc_info()
