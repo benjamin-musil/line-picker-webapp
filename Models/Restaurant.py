@@ -39,7 +39,7 @@ def from_document(document):
                       document.get('WaitTimes'), document.get('ReportedBy'), images)
 
 
-def submit_wait_time(restaurant_id, wait_time, time):
+def submit_wait_time(restaurant_id, wait_time, time, submitter):
     """
     Submit the wait time to the DB
     :param restaurant_id: Restaurant ID
@@ -49,7 +49,7 @@ def submit_wait_time(restaurant_id, wait_time, time):
     """
     collection = MongoDb.mongo_collection('Test Wait Times', database_name='WaitTimes')
     if collection.find_one_and_update({"RestaurantId": str(restaurant_id)},
-                                      {'$push': {'WaitTime': [wait_time, str(time)]}}, {'_id': False}) \
+                                      {'$push': {'WaitTime': [wait_time, str(time), submitter]}}, {'_id': False}) \
             is None:
         # submit the wait for the first time
         wait_post = {

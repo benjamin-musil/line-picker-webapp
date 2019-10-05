@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify, render_template, session
-from pymongo import MongoClient
 from Models import Restaurant, User, MongoDb
 import sys
-import requests
 import json
 import os
 
@@ -10,6 +8,7 @@ from Routes.restaurant_route import restaurant_page
 
 USERID = ''
 app = Flask(__name__, template_folder='templates/')
+app.secret_key = os.urandom(24)
 app.register_blueprint(restaurant_page)
 
 
@@ -67,6 +66,7 @@ def get_user(user):
         user_arr.append(user_test.__dict__)
     print(user_arr)
     return user_arr
+
 
 @app.route('/delete-user/<user>', methods=['GET', 'POST'])
 def delete_user(user):
@@ -189,6 +189,8 @@ def login():
         else:
             global USERID
             USERID = user_id
+            session['logged_in'] = True
+            session['username'] = user_id
             return render_template('success_login.html')
     else:
         return render_template('error.html')
@@ -212,5 +214,4 @@ def input():
     return render_template('login.html')
 
 if __name__ == '__main__':
-    app.secret_key = os.urandom(24)
     app.run(debug=False, host='localhost', port='5000')

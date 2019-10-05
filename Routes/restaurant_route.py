@@ -1,6 +1,6 @@
 import datetime
 import bson
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, session
 from Models import Restaurant, MongoDb
 from Exceptions import exceptions
 
@@ -13,6 +13,8 @@ def get_restaurant(restaurant_id):
     collection = MongoDb.mongo_collection('Test Restaurants ')
     item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
     restaurant = Restaurant.from_document(item)
+    # if the restaurant has less than 3 images, force it to have 3
+    # this is due to how my carousel component works
     while len(restaurant.images) < 3:
         restaurant.images.append(
             'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
@@ -29,7 +31,7 @@ def submit_wait_time():
     form_args = request.form
     restaurant_id = form_args['Id']
     wait_time = form_args['wait']
-    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now())
+    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
     return redirect('/restaurant/' + restaurant_id)
 
 

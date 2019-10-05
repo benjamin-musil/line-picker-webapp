@@ -37,12 +37,14 @@
                     <thead>
                     <th>Wait Time</th>
                     <th>Reported</th>
+                    <th>Reported By</th>
                     </thead>
                     {% if wait_times %}
-                        {% for time, date in wait_times %}
+                        {% for time, date, user in wait_times %}
                             <tr>
                                 <td>{{ time }}</td>
                                 <td>{{ date }}</td>
+                                <td>{{ user }}</td>
                             </tr>
                         {% endfor %}
                     {% else %}
