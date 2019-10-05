@@ -1,30 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='submissions.css') }}"/>
 </head>
- <body>
+<body id="reports">
 
- <style type="text/css">
-* {margin: 0; padding: 0;}
-#container {height: 100%; width:100%; font-size: 0;}
-#left, #right {display: inline-block; *display: inline; zoom: 1; vertical-align: top; font-size: 12px;}
-#left {width: 25%}
-#right {width: 25%}
-</style>
 <h1>My Submissions</h1>
- <br>
-{% for dict_item in restaurant_arr %}
-   {% for key, value in dict_item.items() %}
+<br>
+<table id="wait_times">
+    <thead>
+    <tr>
+        <th>Wait Time Reported</th>
+        <th>Date Reported</th>
+        <th>Restaurant</th>
+    </tr>
+    </thead>
+    {% if wait_submissions %}
+        {% for time, date, id in wait_submissions %}
+            <tr>
+                <td>{{ time }}</td>
+                <td> {{ date }}</td>
+                <td>{{ id }}</td>
+            </tr>
 
- <div id="container">
-     <div id="left">{{key}}</div>
-    <div id="right">{{value}}</div>
-</div>
-
-
-   {% endfor %}
- <br>
-{% endfor %}
-
- </body>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td>No submissions yet</td>
+            <td>Add one!</td>
+        </tr>
+    {% endif %}
+</table>
+<br/><br/>
+<table id="image_reports">
+    <thead>
+    <tr>
+        <th>Image Url</th>
+        <th>Restaurant Id</th>
+    </tr>
+    </thead>
+    {% if image_submissions %}
+        {% for image, restaurant in image_submissions %}
+            <tr>
+                <td>{{ image }}</td>
+                <td> {{ restaurant }}</td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td>No submissions yet</td>
+            <td>Add one!</td>
+        </tr>
+    {% endif %}
+</table>
+</body>
 </html>

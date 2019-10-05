@@ -1,0 +1,29 @@
+#wait_times tr:nth-child(even){background-color: #f2f2f2;}
+
+#wait_times tr:hover {background-color: #ddd;}
+
+#image_reports tr:nth-child(even){background-color: #f2f2f2;}
+
+#image_reports tr:hover {background-color: #ddd;}
+
+ thead {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+ #reports {
+     display: grid;
+ }
+
+ #image_reports {
+     width: 45%;
+     padding-block: 1%;
+ }
+
+ #wait_times {
+     width: 45%;
+     padding-block: 1%;
+ }

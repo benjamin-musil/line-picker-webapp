@@ -118,9 +118,11 @@ def get_wait():
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
+
 @app.route('/RestaurantDetails')
 def RestaurantDetails():
     return render_template("Restaurantdetails.html")
+
 
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
@@ -140,6 +142,7 @@ def SearchByName():
     # Pass a blank tab to load the template page
     UiContent = {'SelectedTab': '', 'RestaurantType': categories}
     return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+
 
 # Route here for getting restaurants based on category
 @app.route('/ListAllRestaurant', methods=['GET', 'POST'])
@@ -177,6 +180,7 @@ def ListAllRestaurant():
     except:
         strException = sys.exc_info()
 
+
 @app.route('/login', methods=['POST'])
 def login():
     content = request.form
@@ -195,23 +199,20 @@ def login():
     else:
         return render_template('error.html')
 
-@app.route('/<userid>/mysubmissions', methods=['GET'])
-def get_by_username(userid):
-    print(USERID)
-    if USERID != userid:
+
+@app.route('/<user_id>/mysubmissions', methods=['GET'])
+def get_by_username(user_id):
+    if USERID != user_id:
         return render_template('error.html')
-    collection = MongoDb.mongo_collection('Test Restaurants ')
-    results = collection.find({'ReportedBy': USERID})
-    restaurant_arr = []
-    for document in results:
-        print(document)
-        restaurant = Restaurant.from_document(document)
-        restaurant_arr.append(restaurant.__dict__)
-    return render_template('mysubmissions_result.html', restaurant_arr=restaurant_arr)
+    user = User.get_submissions(user_id)
+    return render_template('mysubmissions_result.html', wait_submissions=user.__dict__['wait_time_submissions'],
+                           image_submissions=user.__dict__['image_submissions'])
+
 
 @app.route('/')
 def input():
     return render_template('login.html')
+
 
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port='5000')
