@@ -13,6 +13,9 @@ def get_restaurant(restaurant_id):
     collection = MongoDb.mongo_collection('Test Restaurants ')
     item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
     restaurant = Restaurant.from_document(item)
+    while len(restaurant.images) < 3:
+        restaurant.images.append(
+            'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
     try:
         restaurant.wait_times = Restaurant.get_wait_times(restaurant_id)
     except exceptions.NoWaitFound:
@@ -33,6 +36,15 @@ def submit_wait_time():
 @restaurant_page.route('/add-restaurant/', methods=['GET'])
 def add_restaurant():
     return render_template('add_restaurant.html')
+
+
+@restaurant_page.route('/restaurant/submit-image', methods=['POST'])
+def submit_image():
+    form_args = request.form
+    restaurant_id = form_args['Id']
+    print(restaurant_id)
+    Restaurant.submit_image(restaurant_id, form_args['url'])
+    return redirect('/restaurant/' + restaurant_id)
 
 
 @restaurant_page.route('/submit-restaurant/', methods=['POST'])

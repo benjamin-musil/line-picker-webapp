@@ -1,14 +1,17 @@
+import bson
 from Models import MongoDb
 from Exceptions import exceptions
 
 
 class Restaurant:
-    def __init__(self, restaurant_id, name, address, category, wait_times):
+    def __init__(self, restaurant_id, name, address, category, wait_times, reported_by=None, images=[]):
         self.id = restaurant_id
         self.name = name
         self.address = address
         self.category = category
         self.wait_times = wait_times
+        self.reported_by = reported_by
+        self.images = images
 
     def add_to_db(self):
         collection = MongoDb.mongo_collection('Test Restaurants ')
@@ -27,29 +30,44 @@ def from_document(document):
     :param document: Document found from collection
     :return: Restaurant object
     """
-    values = document.values()
-    values = list(values)
-    return Restaurant(str(values[0]), values[1], values[2], values[3], values[4])
+    values = list(document.values())
+    images = document.get('Images')
+    # Image needs to be an array to be used later
+    if images is None:
+        images = []
+    return Restaurant(str(values[0]), document.get('Name'), document.get('Address'), document.get('Category'),
+                      document.get('WaitTimes'), document.get('ReportedBy'), images)
 
 
-def submit_wait_time(restuarant_id, wait_time, time):
+def submit_wait_time(restaurant_id, wait_time, time):
     """
     Submit the wait time to the DB
-    :param restuarant_id: Restuarant ID
+    :param restaurant_id: Restaurant ID
     :param wait_time: wait time
     :param time: time submitted
     :return:
     """
     collection = MongoDb.mongo_collection('Test Wait Times', database_name='WaitTimes')
-    if collection.find_one_and_update({"RestaurantId": str(restuarant_id)},
+    if collection.find_one_and_update({"RestaurantId": str(restaurant_id)},
                                       {'$push': {'WaitTime': [wait_time, str(time)]}}, {'_id': False}) \
             is None:
         # submit the wait for the first time
         wait_post = {
-            'RestaurantId': str(restuarant_id),
+            'RestaurantId': str(restaurant_id),
             'WaitTime': [[wait_time, str(time)]]
         }
         collection.insert_one(wait_post)
+
+
+def submit_image(restaurant_id, url):
+    """
+    submit the image url to the db
+    :param restaurant_id: ID of restaurant to add the image to
+    :param url: url to the image
+    :return: None
+    """
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    collection.find_one_and_update({"_id": bson.objectid.ObjectId(restaurant_id)}, {'$push': {'Images': url}})
 
 
 def get_wait_times(restaurant_id):

@@ -135,3 +135,17 @@ th{
     position: relative;
     opacity: 1;
 }
+
+#image_submission {
+    width: 30%;
+    height: 10%;
+}
+
+#submit_image {
+    text-align: center;
+}
+
+img {
+    height: 250px; !important;
+    width: 250px; !important;
+}

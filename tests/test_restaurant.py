@@ -1,5 +1,5 @@
 import unittest
-from Models.Restaurant import from_document
+from Models.Restaurant import from_document, submit_image
 
 
 class MyTestCase(unittest.TestCase):
@@ -9,6 +9,8 @@ class MyTestCase(unittest.TestCase):
         restaurant = from_document(expected)
         self.assertEqual(restaurant.name, 'Taco Bell')
 
+    def test_submit_image(self):
+        submit_image('5d63fbb41c9d440000acf1b4', 'google.com')
 
 if __name__ == '__main__':
     unittest.main()
