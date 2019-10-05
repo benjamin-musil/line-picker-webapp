@@ -44,8 +44,7 @@ def add_restaurant():
 def submit_image():
     form_args = request.form
     restaurant_id = form_args['Id']
-    print(restaurant_id)
-    Restaurant.submit_image(restaurant_id, form_args['url'])
+    Restaurant.submit_image(restaurant_id, form_args['url'], session.get('username'))
     return redirect('/restaurant/' + restaurant_id)
 
 

@@ -1,5 +1,5 @@
 import bson
-from Models import MongoDb
+from Models import MongoDb, User
 from Exceptions import exceptions
 
 
@@ -45,8 +45,12 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter):
     :param restaurant_id: Restaurant ID
     :param wait_time: wait time
     :param time: time submitted
+    :param submitter: who submitted the wait time
     :return:
     """
+    # mostly for testing
+    if submitter is None:
+        submitter = 'admin'
     collection = MongoDb.mongo_collection('Test Wait Times', database_name='WaitTimes')
     if collection.find_one_and_update({"RestaurantId": str(restaurant_id)},
                                       {'$push': {'WaitTime': [wait_time, str(time), submitter]}}, {'_id': False}) \
@@ -54,20 +58,23 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter):
         # submit the wait for the first time
         wait_post = {
             'RestaurantId': str(restaurant_id),
-            'WaitTime': [[wait_time, str(time)]]
+            'WaitTime': [[wait_time, str(time), submitter]]
         }
         collection.insert_one(wait_post)
+    User.append_submit_wait(submitter, [wait_time, str(time), str(restaurant_id)])
 
 
-def submit_image(restaurant_id, url):
+def submit_image(restaurant_id, url, submitter):
     """
     submit the image url to the db
     :param restaurant_id: ID of restaurant to add the image to
     :param url: url to the image
+    :param submitter: who submitted the image
     :return: None
     """
     collection = MongoDb.mongo_collection('Test Restaurants ')
     collection.find_one_and_update({"_id": bson.objectid.ObjectId(restaurant_id)}, {'$push': {'Images': url}})
+    User.append_submit_image(submitter, [url, str(restaurant_id)])
 
 
 def get_wait_times(restaurant_id):
@@ -80,10 +87,12 @@ def get_wait_times(restaurant_id):
     db = MongoDb.mongo_database('WaitTimes')
     collection_name = "Test Wait Times"
     collection = db[collection_name]
-    items = collection.find({"RestaurantId": str(restaurant_id)})
-    json_arr = []
-    json_arr.extend(items)
-    if not json_arr:
+    items = collection.find_one({"RestaurantId": str(restaurant_id)}, {'_id': False})
+    wait_times = items['WaitTime']
+    if items is None:
         raise exceptions.NoWaitFound()
-    wait_time = json_arr[0]['WaitTime']
-    return wait_time
+    # if something was submitted before the users were tracked, it was an admin that did it
+    for wait_time in wait_times:
+        if len(wait_time) < 3:
+            wait_time.append('admin')
+    return wait_times
