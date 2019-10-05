@@ -171,28 +171,6 @@ def ListAllRestaurant():
         data = json.loads(res)
         UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
-
-        # if strSelect is None:
-        #     # Empty table at startup
-        #     SelectedTab = ''
-        # elif strSelect == 'All':
-        #     # need to reorganize this, but bedtime and I'm pushing this lol - Ben
-        #     SelectedTab = strSelect
-        #     jsonInput = {}
-        #     jsonInput['Category'] = SelectedTab
-        #     res = search_Restaurant({}).response[0]
-        #     data = json.loads(res)
-        #     UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
-        #     return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
-        # else:
-        #     SelectedTab = strSelect
-        #
-        # jsonInput = {}
-        # jsonInput['Category'] = SelectedTab
-        # res = search_Restaurant(jsonInput).response[0]
-        # data = json.loads(res)
-        # UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': lstCategory}
-        # return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
     except:
         strException = sys.exc_info()
 
