@@ -19,7 +19,8 @@ class Restaurant:
             'Name': self.name,
             'Address': self.address,
             'Category': self.category,
-            'WaitTimes': 'unknown'
+            'WaitTimes': 'unknown',
+            'ReportedBy': 'unknown'
         }
         return collection.insert_one(obj).inserted_id
 
@@ -62,6 +63,7 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter):
         }
         collection.insert_one(wait_post)
     User.append_submit_wait(submitter, [wait_time, str(time), str(restaurant_id)])
+    update_time_reported_by(str(restaurant_id), wait_time, submitter)
 
 
 def submit_image(restaurant_id, url, submitter):
@@ -96,3 +98,16 @@ def get_wait_times(restaurant_id):
         if len(wait_time) < 3:
             wait_time.append('admin')
     return wait_times
+
+
+def update_time_reported_by(restaurant_id, time, submitter):
+    """
+    change the reported by and current wait time to what was just submitted
+    :param restaurant_id: id of restaurant
+    :param time: wait time that was submitted (in minutes)
+    :param submitter: user_id
+    :return:
+    """
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    collection.find_one_and_update({'_id': bson.objectid.ObjectId(restaurant_id)},
+                                   {'$set': {'WaitTimes': time, 'ReportedBy': submitter}})

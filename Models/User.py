@@ -2,7 +2,8 @@ from Models import MongoDb
 
 
 class User:
-    def __init__(self, user_id, user_name, email, password, role, favorite_food, wait_time_submissions=[], image_submissions=[]):
+    def __init__(self, user_id, user_name, email, password, role, favorite_food, wait_time_submissions=[],
+                 image_submissions=[]):
         self.id = user_id
         self.user_name = user_name
         self.email = email
