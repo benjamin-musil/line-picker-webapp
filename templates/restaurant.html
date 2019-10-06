@@ -11,7 +11,7 @@
     {% import "macros.html" as macros %}
 </head>
 <body>
-{{macros.build_site_navigation(pages=pages, selected="Restaurant",user=user)}}
+{{macros.build_side_bar(pages=pages, selected="Restaurant",user=user)}}
 <div id="main">
     {% if restaurant %}
         <h1>{{ restaurant['name'] }}, {{ restaurant['address'] }}</h1>

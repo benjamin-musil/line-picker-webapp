@@ -1,6 +1,6 @@
 import datetime
 import bson
-from flask import Blueprint, render_template, request, redirect, session, url_for
+from flask import Blueprint, render_template, request, redirect, session
 from Models import Restaurant, MongoDb, Shared
 from Exceptions import exceptions
 

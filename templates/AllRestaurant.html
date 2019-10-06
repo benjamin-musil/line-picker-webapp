@@ -16,7 +16,7 @@
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
     {% import "macros.html" as macros %}
 <body>
-{{ macros.build_site_navigation(pages=pages, selected="Restaurant",user=user) }}
+{{ macros.build_side_bar(pages=pages, selected="Restaurant",user=user) }}
 <div id="main">
     <div id="search_bar">
         <form action="ListAllRestaurant/Search" method="get">

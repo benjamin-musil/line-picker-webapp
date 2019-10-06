@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify, render_template, session
-from Models import Restaurant, User, MongoDb, Shared
 import sys
 import json
 import os
+from flask import Flask, request, jsonify, render_template, session
+from Models import Restaurant, User, MongoDb, Shared
+
 
 from Routes.restaurant_route import restaurant_page
 
@@ -147,8 +148,8 @@ def SearchByName():
 
     # Pass a blank tab to load the template page
     UiContent = {'SelectedTab': '', 'RestaurantType': categories}
-    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,pages=Shared.generate_page_list(),
-                           user=session.get('username'))
+    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
+                           pages=Shared.generate_page_list(), user=session.get('username'))
 
 
 # Route here for getting restaurants based on category
