@@ -10,7 +10,7 @@
         })
 
         function fun(strSelection) {
-            window.location.href = "{{ url_for( 'ListAllRestaurant') }}" + "?select=" + strSelection
+            window.location.href = "{{ url_for('restaurant_page.get_restaurant', restaurant_id=strSelection) }}"
         }
     </script>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
@@ -94,7 +94,7 @@
                     {% for restaurant in restaurants %}
                         <tr id={{ restaurant.id }}>
                             <td scope="row"><a
-                                    href= {{ url_for('RestaurantDetails', id=restaurant.id) }}>{{ restaurant.name }}</a>
+                                    href= {{ url_for('restaurant_page.get_restaurant', restaurant_id=restaurant.id) }}>{{ restaurant.name }}</a>
                             </td>
                             <td> {{ restaurant.address }} </td>
                             <td> {{ restaurant.wait_times }} </td>
