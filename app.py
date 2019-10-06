@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import re
 from flask import Flask, request, jsonify, render_template, session
 from Models import Restaurant, User, MongoDb, Shared
 
@@ -133,7 +134,7 @@ def RestaurantDetails():
 
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
-def SearchByName():
+def SearchBar():
     # Get all restaurant categories
     if session.get('RestaurantCategory') is None:
         categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -141,9 +142,12 @@ def SearchByName():
     else:
         categories = session['RestaurantCategory']
 
-    # Match search query to name of restaurant
+    # Create regular expression of search query
     tag = request.args.get('restaurant_tag')
-    res = search_Restaurant({'Name': tag}).response[0]
+    tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
+
+    # Match search query to name or category of restaurant
+    res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
     data = json.loads(res)
 
     # Pass a blank tab to load the template page
@@ -225,4 +229,4 @@ def input():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='localhost', port='5000')
+    app.run(debug=False, host='localhost', port='5000', threaded="True")
