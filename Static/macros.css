@@ -1,26 +1,26 @@
 
 #sidenav {
-  height: 100%;
-  width: 160px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  padding-top: 20px;
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
 }
 
 #sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
 }
 
 #sidenav a:hover {
-  color: #f1f1f1;
+    color: #f1f1f1;
 }
 
 #user {
@@ -28,24 +28,33 @@
     max-width: 160px;
 }
 
-#user h2{
+#user h2 {
     font-size: 2.5rem;
 }
 
 #user_pic {
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 30px; !important;
+    height: 30px; !important;
     float: left;
     margin: 10px;
+    vertical-align: middle;
+    border-style: none;
+    max-width: 35px; !important;
+    max-height: 35px; !important;
 }
 
 #main {
-  margin-left: 160px; /* Same as the width of the sidenav */
-  padding: 0px 10px;
+    margin-left: 160px; /* Same as the width of the sidenav */
+    padding: 0px 10px;
 }
 
 @media screen and (max-height: 450px) {
-  #sidenav {padding-top: 15px;}
-  #sidenav a {font-size: 18px;}
+    #sidenav {
+        padding-top: 15px;
+    }
+
+    #sidenav a {
+        font-size: 18px;
+    }
 }
