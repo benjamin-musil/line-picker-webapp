@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='submissions.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    {% import "macros.html" as macros %}
 </head>
 <body id="reports">
 
+{{ macros.build_site_navigation(pages=pages, selected="Restaurant",user=user) }}
+<div id="main">
 <h1>My Submissions</h1>
 <br>
 <table id="wait_times">
@@ -54,5 +57,6 @@
         </tr>
     {% endif %}
 </table>
+</div>
 </body>
 </html>

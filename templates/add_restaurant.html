@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add a Restaurant</title>
-<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
     {% import "macros.html" as macros %}
 </head>
 <body onload="clearForm()">
@@ -11,7 +11,7 @@
 <script type="text/javascript" src="//code.jquery.com/jquery-1.5.2.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css') }}"/>
 
-{{macros.build_site_navigation(pages=pages, selected="Restaurant",user=user)}}
+{{ macros.build_site_navigation(pages=pages, selected="Restaurant",user=user) }}
 <div id="main">
     <h1>Add a Restaurant</h1>
     <form action="/submit-restaurant/" method="post">

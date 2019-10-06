@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, session
-from Models import Restaurant, User, MongoDb
+from Models import Restaurant, User, MongoDb, Shared
 import sys
 import json
 import os
@@ -147,7 +147,8 @@ def SearchByName():
 
     # Pass a blank tab to load the template page
     UiContent = {'SelectedTab': '', 'RestaurantType': categories}
-    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,pages=Shared.generate_page_list(),
+                           user=session.get('username'))
 
 
 # Route here for getting restaurants based on category
@@ -182,7 +183,8 @@ def ListAllRestaurant():
 
         data = json.loads(res)
         UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': categories}
-        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
+                               pages=Shared.generate_page_list(), user=session.get('username'))
     except:
         strException = sys.exc_info()
 
@@ -212,7 +214,8 @@ def get_by_username(user_id):
         return render_template('error.html')
     user = User.get_submissions(user_id)
     return render_template('mysubmissions_result.html', wait_submissions=user.__dict__['wait_time_submissions'],
-                           image_submissions=user.__dict__['image_submissions'])
+                           image_submissions=user.__dict__['image_submissions'], pages=Shared.generate_page_list(),
+                           user=session.get('username'))
 
 
 @app.route('/')
