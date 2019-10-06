@@ -1,16 +1,19 @@
-
-
+{#based on the following article https://michaelabrahamsen.com/posts/create-navigation-sidebar-with-flask/
+    modified to fit the needs of our application#}
 {% macro build_site_navigation(pages, selected, user) %}
 
 <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
 <div id="sidenav">
+    <div id="user">
     {% if user %}
-        <h2>{{ user}}</h2>
+        <img id ="userpic" src="https://cdn.discordapp.com/attachments/617802273086504960/628788239230173204/unknown.png" >
+        <h2>{{ user }}</h2>
     {% endif %}
+    </div>
     <div>
         {% for page in pages %}
         <a href="{{page.url}}">
-            <li class="text-lg pl-6 py-3 {% if selected == page.name %}border-l-4 bg-gray-200{% endif %}">{{page.name}}</li>
+            <span class="text-lg {% if selected == page.name %}border-l-4 bg-gray-200{% endif %}">{{page.name}}</span>
         </a>
         {% endfor %}
     </div>

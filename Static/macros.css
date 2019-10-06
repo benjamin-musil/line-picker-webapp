@@ -23,6 +23,23 @@
   color: #f1f1f1;
 }
 
+#user {
+    color: #818181;
+    max-width: 160px;
+}
+
+#user h2{
+    font-size: 2.5rem;
+}
+
+#userpic {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    float: left;
+    margin: 10px;
+}
+
 #main {
   margin-left: 160px; /* Same as the width of the sidenav */
   padding: 0px 10px;

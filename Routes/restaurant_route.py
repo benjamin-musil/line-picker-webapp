@@ -1,7 +1,7 @@
 import datetime
 import bson
 from flask import Blueprint, render_template, request, redirect, session, url_for
-from Models import Restaurant, MongoDb, User
+from Models import Restaurant, MongoDb, Shared
 from Exceptions import exceptions
 
 restaurant_page = Blueprint('restaurant_page', __name__,
@@ -23,7 +23,13 @@ def get_restaurant(restaurant_id):
     except exceptions.NoWaitFound:
         restaurant.wait_times = None
     return render_template('restaurant.html', restaurant=restaurant.__dict__,
-                           wait_times=restaurant.__dict__['wait_times'], pages=generate_page_list(),
+                           wait_times=restaurant.__dict__['wait_times'], pages=Shared.generate_page_list(),
+                           user=session.get('username'))
+
+
+@restaurant_page.route('/add-restaurant/', methods=['GET'])
+def add_restaurant():
+    return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
                            user=session.get('username'))
 
 
@@ -34,11 +40,6 @@ def submit_wait_time():
     wait_time = form_args['wait']
     Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
     return redirect('/restaurant/' + restaurant_id)
-
-
-@restaurant_page.route('/add-restaurant/', methods=['GET'])
-def add_restaurant():
-    return render_template('add_restaurant.html')
 
 
 @restaurant_page.route('/restaurant/submit-image', methods=['POST'])
@@ -55,25 +56,3 @@ def submit_restaurant():
     restaurant = Restaurant.Restaurant('', form_args['Name'], form_args['Address'], form_args['category'], '-')
     new_id = restaurant.add_to_db()
     return redirect('/restaurant/' + str(new_id))
-
-
-def generate_page_list():
-    if session.get('logged_in'):
-        pages = [
-            {"name": "Home", "url": url_for(
-                "login")
-             },
-            {"name": "Search Restaurant", "url": url_for(
-                "ListAllRestaurant")
-             },
-            {"name": "Add a Restaurant", "url": url_for(
-                "restaurant_page.add_restaurant")
-             },
-            {"name": "My Submissions", "url": url_for('get_by_username', user_id=session.get('username'))
-             }
-        ]
-    else:
-        pages = [{
-            "name": "Login", "url": url_for('input')
-        }]
-    return pages
