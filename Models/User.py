@@ -73,3 +73,16 @@ def get_submissions(user_id):
     collection = MongoDb.mongo_collection('Users ')
     item = collection.find_one({'user_id': user_id}, {'_id': False})
     return from_document(item)
+
+
+def get_sidebar_info(user_id):
+    """
+    Get the information you want from the user table for the sidebar
+    :param user_id:
+    :return: object to be passed to the sidebar
+    """
+    collection = MongoDb.mongo_collection('Users ')
+    item = collection.find_one({'user_id': user_id}, {'_id': False})
+    if item is None:
+        return {'id': 'plz login'}
+    return {'id': item.get('user_id')}

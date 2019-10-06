@@ -7,9 +7,12 @@
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='restaurant.css') }}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    {% import "macros.html" as macros %}
 </head>
 <body>
-<div>
+{{macros.build_side_bar(pages=pages, selected="Restaurant",user=user)}}
+<div id="main">
     {% if restaurant %}
         <h1>{{ restaurant['name'] }}, {{ restaurant['address'] }}</h1>
     {% endif %}

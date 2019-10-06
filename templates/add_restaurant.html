@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Add a Restaurant</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    {% import "macros.html" as macros %}
 </head>
 <body onload="clearForm()">
 <script src="{{ url_for('static', filename='add_restaurant.js') }}"></script>
 <script type="text/javascript" src="//code.jquery.com/jquery-1.5.2.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css') }}"/>
-<div>
+
+{{ macros.build_side_bar(pages=pages, selected="Add a Restaurant",user=user) }}
+<div id="main">
     <h1>Add a Restaurant</h1>
     <form action="/submit-restaurant/" method="post">
         <input type="text" name="Name" placeholder="Name of Restaurant" id="name"><br/><br/>

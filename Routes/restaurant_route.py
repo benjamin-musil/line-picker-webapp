@@ -1,7 +1,7 @@
 import datetime
 import bson
 from flask import Blueprint, render_template, request, redirect, session
-from Models import Restaurant, MongoDb
+from Models import Restaurant, MongoDb, Shared
 from Exceptions import exceptions
 
 restaurant_page = Blueprint('restaurant_page', __name__,
@@ -23,7 +23,14 @@ def get_restaurant(restaurant_id):
     except exceptions.NoWaitFound:
         restaurant.wait_times = None
     return render_template('restaurant.html', restaurant=restaurant.__dict__,
-                           wait_times=restaurant.__dict__['wait_times'])
+                           wait_times=restaurant.__dict__['wait_times'], pages=Shared.generate_page_list(),
+                           user=session.get('username'))
+
+
+@restaurant_page.route('/add-restaurant/', methods=['GET'])
+def add_restaurant():
+    return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
+                           user=session.get('username'))
 
 
 @restaurant_page.route('/restaurant/submit-time', methods=['GET', 'POST'])
@@ -33,11 +40,6 @@ def submit_wait_time():
     wait_time = form_args['wait']
     Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
     return redirect('/restaurant/' + restaurant_id)
-
-
-@restaurant_page.route('/add-restaurant/', methods=['GET'])
-def add_restaurant():
-    return render_template('add_restaurant.html')
 
 
 @restaurant_page.route('/restaurant/submit-image', methods=['POST'])

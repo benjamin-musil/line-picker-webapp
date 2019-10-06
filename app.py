@@ -1,8 +1,10 @@
-from flask import Flask, request, jsonify, render_template, session
-from Models import Restaurant, User, MongoDb
 import sys
 import json
 import os
+import re
+from flask import Flask, request, jsonify, render_template, session
+from Models import Restaurant, User, MongoDb, Shared
+
 
 from Routes.restaurant_route import restaurant_page
 
@@ -132,7 +134,7 @@ def RestaurantDetails():
 
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
-def SearchByName():
+def SearchBar():
     # Get all restaurant categories
     if session.get('RestaurantCategory') is None:
         categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -140,14 +142,18 @@ def SearchByName():
     else:
         categories = session['RestaurantCategory']
 
-    # Match search query to name of restaurant
+    # Create regular expression of search query
     tag = request.args.get('restaurant_tag')
-    res = search_Restaurant({'Name': tag}).response[0]
+    tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
+
+    # Match search query to name or category of restaurant
+    res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
     data = json.loads(res)
 
     # Pass a blank tab to load the template page
     UiContent = {'SelectedTab': '', 'RestaurantType': categories}
-    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
+                           pages=Shared.generate_page_list(), user=session.get('username'))
 
 
 # Route here for getting restaurants based on category
@@ -182,7 +188,8 @@ def ListAllRestaurant():
 
         data = json.loads(res)
         UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': categories}
-        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data)
+        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
+                               pages=Shared.generate_page_list(), user=session.get('username'))
     except:
         strException = sys.exc_info()
 
@@ -212,7 +219,8 @@ def get_by_username(user_id):
         return render_template('error.html')
     user = User.get_submissions(user_id)
     return render_template('mysubmissions_result.html', wait_submissions=user.__dict__['wait_time_submissions'],
-                           image_submissions=user.__dict__['image_submissions'])
+                           image_submissions=user.__dict__['image_submissions'], pages=Shared.generate_page_list(),
+                           user=session.get('username'))
 
 
 @app.route('/')
@@ -221,4 +229,4 @@ def input():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='localhost', port='5000')
+    app.run(debug=False, host='localhost', port='5000', threaded="True")
