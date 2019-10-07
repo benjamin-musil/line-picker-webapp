@@ -2,7 +2,7 @@ import sys
 import json
 import os
 import re
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template, session, redirect
 from Models import Restaurant, User, MongoDb, Shared
 
 
@@ -208,7 +208,7 @@ def login():
             USERID = user_id
             session['logged_in'] = True
             session['username'] = user_id
-            return render_template('success_login.html')
+            return redirect('ListAllRestaurant')
     else:
         return render_template('error.html')
 
