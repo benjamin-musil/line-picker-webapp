@@ -5,7 +5,7 @@ def generate_page_list():
     if session.get('logged_in'):
         pages = [
             {"name": "Home", "url": url_for(
-                "login")
+                "ListAllRestaurant")
              },
             {"name": "Search Restaurant", "url": url_for(
                 "ListAllRestaurant")
