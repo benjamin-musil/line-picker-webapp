@@ -2,7 +2,7 @@
     modified to fit the needs of our application#}
 {% macro build_side_bar(pages, selected, user) %}
 
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
     <div id="sidenav">
         <div id="user">
             {% if user %}

@@ -2,7 +2,7 @@ import sys
 import json
 import os
 import re
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template, session, redirect
 from Models import Restaurant, User, MongoDb, Shared
 
 
@@ -127,11 +127,6 @@ def get_wait():
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
-@app.route('/RestaurantDetails')
-def RestaurantDetails():
-    return render_template("Restaurantdetails.html")
-
-
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
 def SearchBar():
@@ -208,7 +203,7 @@ def login():
             USERID = user_id
             session['logged_in'] = True
             session['username'] = user_id
-            return render_template('success_login.html')
+            return redirect('ListAllRestaurant')
     else:
         return render_template('error.html')
 
@@ -229,4 +224,4 @@ def input():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='localhost', port='5000', threaded="True")
+    app.run(debug=False, threaded="True")

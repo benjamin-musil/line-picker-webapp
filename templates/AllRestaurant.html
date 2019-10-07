@@ -10,10 +10,10 @@
         })
 
         function fun(strSelection) {
-            window.location.href = "{{ url_for('restaurant_page.get_restaurant', restaurant_id=strSelection) }}"
+            window.location.href = "{{ url_for( 'ListAllRestaurant', _external=True) }}" + "?select=" + strSelection
         }
     </script>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
     {% import "macros.html" as macros %}
 <body>
 {{ macros.build_side_bar(pages=pages, selected="Restaurant",user=user) }}
@@ -94,7 +94,7 @@
                     {% for restaurant in restaurants %}
                         <tr id={{ restaurant.id }}>
                             <td scope="row"><a
-                                    href= {{ url_for('restaurant_page.get_restaurant', restaurant_id=restaurant.id) }}>{{ restaurant.name }}</a>
+                                    href= {{ url_for('restaurant_page.get_restaurant', restaurant_id=restaurant.id, _external=True) }}>{{ restaurant.name }}</a>
                             </td>
                             <td> {{ restaurant.address }} </td>
                             <td> {{ restaurant.wait_times }} </td>

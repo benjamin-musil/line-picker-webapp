@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='submissions.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='submissions.css', _external=True) }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
     {% import "macros.html" as macros %}
 </head>
 <body id="reports">

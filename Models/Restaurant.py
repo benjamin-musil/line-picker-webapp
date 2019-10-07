@@ -90,9 +90,10 @@ def get_wait_times(restaurant_id):
     collection_name = "Test Wait Times"
     collection = db[collection_name]
     items = collection.find_one({"RestaurantId": str(restaurant_id)}, {'_id': False})
-    wait_times = items['WaitTime']
+
     if items is None:
         raise exceptions.NoWaitFound()
+    wait_times = items['WaitTime']
     # if something was submitted before the users were tracked, it was an admin that did it
     for wait_time in wait_times:
         if len(wait_time) < 3:
