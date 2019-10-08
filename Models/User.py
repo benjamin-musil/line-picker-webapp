@@ -86,3 +86,23 @@ def get_sidebar_info(user_id):
     if item is None:
         return {'id': 'plz login'}
     return {'id': item.get('user_id')}
+
+
+def add_user_to_db(user_id, user_email):
+    """
+
+    :param user_id:
+    :return:
+    """
+    collection = MongoDb.mongo_collection('Users ')
+
+    obj = {
+        'user_id': user_id,
+        'password': None,
+        'email': user_email,
+        'role': 'user',
+        'favorite_food': None
+    }
+    print(obj)
+    collection.insert(obj)
+

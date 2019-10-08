@@ -1,7 +1,12 @@
 from flask import session, url_for
+import google.oauth2.id_token
+from google.auth.transport import requests
+from Models import Shared
+from flask import request
 
 
 def generate_page_list():
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     if session.get('logged_in'):
         pages = [
             {"name": "Home", "url": url_for(
@@ -21,3 +26,12 @@ def generate_page_list():
             "name": "Login", "url": url_for('input', _external=True)
         }]
     return pages
+
+
+firebase_request_adapter = requests.Request()
+def set_session(id_token):
+    claims = google.oauth2.id_token.verify_firebase_token(
+        id_token, firebase_request_adapter)
+    print(claims)
+    if claims:
+        return True, claims['name'].replace(' ', '_')
