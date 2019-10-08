@@ -200,11 +200,16 @@ def ListAllRestaurant():
 firebase_request_adapter = requests.Request()
 @app.route('/login', methods=['GET'])
 def login():
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     id_token = request.cookies.get("token")
-    claims = google.oauth2.id_token.verify_firebase_token(
+    print(id_token)
+    try:
+        claims = google.oauth2.id_token.verify_firebase_token(
         id_token, firebase_request_adapter)
-    print(claims)
+    except ValueError as exc:
+        # This will be raised if the token is expired or any other
+        # verification checks fail.
+        error_message = str(exc)
+        print(error_message)
     user_id = claims['name'].replace(' ', '_')
     user_email = claims['email']
     user_info = get_user(user_id)
@@ -212,7 +217,8 @@ def login():
     if len(user_info) == 0:
         # add to the db yo
         User.add_user_to_db(user_id, user_email)
-
+    session['username'] = claims['name'].replace(' ', '_')
+    session['logged_in'] = True
     USERID = user_id
     return redirect('ListAllRestaurant')
 
