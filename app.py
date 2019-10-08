@@ -211,8 +211,6 @@ def login():
         # verification checks fail.
         error_message = str(exc)
         print(error_message)
-    print('after verify')
-    print(claims)
     user_id = claims['name'].replace(' ', '_')
     user_email = claims['email']
     user_info = get_user(user_id)
