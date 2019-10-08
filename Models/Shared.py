@@ -19,7 +19,10 @@ def generate_page_list():
                 "restaurant_page.add_restaurant", _external=True)
              },
             {"name": "My Submissions", "url": url_for('get_by_username', user_id=session.get('username'), _external=True)
+             },
+            {"name": "Settings", "url": url_for('user_settings', _external=True)
              }
+
         ]
     else:
         pages = [{
@@ -29,9 +32,10 @@ def generate_page_list():
 
 
 firebase_request_adapter = requests.Request()
+
+
 def set_session(id_token):
     claims = google.oauth2.id_token.verify_firebase_token(
         id_token, firebase_request_adapter)
-    print(claims)
     if claims:
         return True, claims['name'].replace(' ', '_')

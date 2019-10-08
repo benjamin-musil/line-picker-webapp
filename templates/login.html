@@ -60,37 +60,6 @@
 
 <button id="sign-out" hidden=true>Sign Out</button>
 
-{#<div id="login-info" hidden=true>#}
-{#  <h2>Login info:</h2>#}
-{#  {% if user_data %}#}
-{#    <dl>#}
-{#      <dt>Name</dt><dd>{{ user_data['name'] }}</dd>#}
-{#      <dt>Email</dt><dd>{{ user_data['email'] }}</dd>#}
-{#      <dt>Last 10 visits</dt><dd>#}
-{#        {% for time in times %}#}
-{#          <p>{{ time['timestamp'] }}</p>#}
-{#        {% endfor %} </dd>#}
-{#    </dl>#}
-{#  {% elif error_message %}#}
-{#    <p>Error: {{ error_message }}</p>#}
-{#  {% endif %}#}
-{#</div>#}
-{#<form action="/login" method="POST">#}
-{##}
-{#    <div>#}
-{#        <label for="userid">User ID</label>#}
-{#        <input name="userid" id="userid" type="text">#}
-{#    </div>#}
-{##}
-{#    <div>#}
-{#        <label for="password">Password</label>#}
-{#        <input name="password" id="password" type="text">#}
-{#    </div>#}
-{#    <p>#}
-{#        <input type="Submit" value="Submit"/>#}
-{#    </p>#}
-{#</form>#}
-
 <pre id="result"></pre>
 
 </body>

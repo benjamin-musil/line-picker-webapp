@@ -234,6 +234,24 @@ def get_by_username(user_id):
                            user=session.get('username'))
 
 
+@app.route('/user-settings', methods=['GET'])
+def user_settings():
+    if not request.cookies.get("token"):
+        return redirect('/')
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+    categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+    return render_template('user_settings.html', user=session.get('username'),
+                           categories=categories, pages=Shared.generate_page_list(),
+                           dbuser=User.get_user_info(session.get('username')))
+
+
+@app.route('/update-user', methods=['POST'])
+def update_user():
+    form_args = request.form
+    User.update_user(session.get('username'), form_args['category'])
+    return redirect('/user-settings')
+
+
 @app.route('/')
 def input():
     return render_template('login.html')
