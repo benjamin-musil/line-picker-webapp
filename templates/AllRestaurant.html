@@ -14,6 +14,7 @@
         }
     </script>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='all_restaurants.css', _external=True) }}"/>
     {% import "macros.html" as macros %}
 <body>
 {{ macros.build_side_bar(pages=pages, selected="Restaurant",user=user) }}
@@ -88,6 +89,7 @@
                         <th scope="col">Location</th>
                         <th scope="col">Wait Time (Minutes)</th>
                         <th scope="col">Reported By</th>
+                        <th scope="col">Latest Image</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -99,6 +101,7 @@
                             <td> {{ restaurant.address }} </td>
                             <td> {{ restaurant.wait_times }} </td>
                             <td> {{ restaurant.reported_by }} </td>
+                            <td> <img src={{ restaurant.images[0] }}> </td>
                         </tr>
                     {% endfor %}
 

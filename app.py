@@ -148,8 +148,11 @@ def SearchBar():
 
     # Match search query to name or category of restaurant
     res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
-    data = json.loads(res)
 
+    data = json.loads(res)
+    for restaurant in data:
+        if len(restaurant['images']) == 0:
+            restaurant['images'].append('https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
     # Pass a blank tab to load the template page
     UiContent = {'SelectedTab': '', 'RestaurantType': categories}
     return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
