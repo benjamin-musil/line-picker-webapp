@@ -4,6 +4,8 @@ import os
 import re
 from flask import Flask, request, jsonify, render_template, session, redirect
 from Models import Restaurant, User, MongoDb, Shared
+from google.auth.transport import requests
+import google.oauth2.id_token
 
 
 from Routes.restaurant_route import restaurant_page
@@ -130,6 +132,9 @@ def get_wait():
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
 def SearchBar():
+    if not request.cookies.get("token"):
+        return redirect('/')
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     # Get all restaurant categories
     if session.get('RestaurantCategory') is None:
         categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -156,6 +161,9 @@ def SearchBar():
 def ListAllRestaurant():
     try:
         # Get all restaurant categories
+        if not request.cookies.get("token"):
+            return redirect('/')
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
             session['RestaurantCategory'] = categories
@@ -186,32 +194,34 @@ def ListAllRestaurant():
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
                                pages=Shared.generate_page_list(), user=session.get('username'))
     except:
-        strException = sys.exc_info()
+        return sys.exc_info()
 
 
-@app.route('/login', methods=['POST'])
+firebase_request_adapter = requests.Request()
+@app.route('/login', methods=['GET'])
 def login():
-    content = request.form
-    user_id = content['userid']
-    password = content['password']
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+    id_token = request.cookies.get("token")
+    claims = google.oauth2.id_token.verify_firebase_token(
+        id_token, firebase_request_adapter)
+    print(claims)
+    user_id = claims['name'].replace(' ', '_')
+    user_email = claims['email']
     user_info = get_user(user_id)
-    if user_info:
-        if user_info[0].get("password") != password:
-            return render_template('error.html')
-        else:
-            global USERID
-            USERID = user_id
-            session['logged_in'] = True
-            session['username'] = user_id
-            return redirect('ListAllRestaurant')
-    else:
-        return render_template('error.html')
+    # get_user returns [] when not found
+    if len(user_info) == 0:
+        # add to the db yo
+        User.add_user_to_db(user_id, user_email)
+
+    USERID = user_id
+    return redirect('ListAllRestaurant')
 
 
 @app.route('/<user_id>/mysubmissions', methods=['GET'])
 def get_by_username(user_id):
-    if USERID != user_id:
-        return render_template('error.html')
+    if not request.cookies.get("token"):
+        return redirect('/')
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     user = User.get_submissions(user_id)
     return render_template('mysubmissions_result.html', wait_submissions=user.__dict__['wait_time_submissions'],
                            image_submissions=user.__dict__['image_submissions'], pages=Shared.generate_page_list(),

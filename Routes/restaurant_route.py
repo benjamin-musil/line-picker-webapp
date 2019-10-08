@@ -10,6 +10,9 @@ restaurant_page = Blueprint('restaurant_page', __name__,
 
 @restaurant_page.route('/restaurant/<restaurant_id>')
 def get_restaurant(restaurant_id):
+    if not request.cookies.get("token"):
+        return redirect('/')
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     collection = MongoDb.mongo_collection('Test Restaurants ')
     item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
     restaurant = Restaurant.from_document(item)
@@ -29,6 +32,9 @@ def get_restaurant(restaurant_id):
 
 @restaurant_page.route('/add-restaurant/', methods=['GET'])
 def add_restaurant():
+    if not request.cookies.get("token"):
+        return redirect('/')
+    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
                            user=session.get('username'))
 
