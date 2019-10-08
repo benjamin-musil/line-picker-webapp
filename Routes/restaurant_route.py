@@ -36,7 +36,8 @@ def add_restaurant():
         return redirect('/')
     session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
     return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
-                           user=session.get('username'))
+                           user=session.get('username'),
+                           categories=MongoDb.mongo_collection('Test Restaurants ').distinct('Category'))
 
 
 @restaurant_page.route('/restaurant/submit-time', methods=['GET', 'POST'])
