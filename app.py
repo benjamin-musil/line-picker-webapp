@@ -200,7 +200,6 @@ def ListAllRestaurant():
 firebase_request_adapter = requests.Request()
 @app.route('/login', methods=['GET'])
 def login():
-    print('test')
     id_token = request.cookies.get("token")
     print(id_token)
     try:
