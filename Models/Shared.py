@@ -1,7 +1,7 @@
 from flask import session, url_for
 import google.oauth2.id_token
 from google.auth.transport import requests
-from Models import Shared
+from Models import Shared, User
 from flask import request
 
 
@@ -10,7 +10,7 @@ def generate_page_list():
     if session.get('logged_in'):
         pages = [
             {"name": "Home", "url": url_for(
-                "ListAllRestaurant", _external=True)
+                "SearchBar",restaurant_tag=User.get_user_info(session.get('username'))['favorite_food'], _external=True)
              },
             {"name": "Search Restaurant", "url": url_for(
                 "ListAllRestaurant", _external=True)
