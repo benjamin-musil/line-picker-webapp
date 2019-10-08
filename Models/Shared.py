@@ -7,10 +7,14 @@ from flask import request
 
 def generate_page_list():
     session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+    favorite_food = User.get_user_info(session.get('username'))['favorite_food']
+    if not favorite_food:
+        favorite_food = ""
     if session.get('logged_in'):
         pages = [
             {"name": "Home", "url": url_for(
-                "SearchBar",restaurant_tag=User.get_user_info(session.get('username'))['favorite_food'], _external=True)
+                "SearchBar", restaurant_tag=favorite_food,
+                _external=True)
              },
             {"name": "Search Restaurant", "url": url_for(
                 "ListAllRestaurant", _external=True)
