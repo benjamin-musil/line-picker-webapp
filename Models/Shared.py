@@ -3,6 +3,7 @@ import google.oauth2.id_token
 from google.auth.transport import requests
 from Models import Shared, User
 from flask import request
+from Exceptions import exceptions
 
 
 def generate_page_list():
@@ -39,7 +40,10 @@ firebase_request_adapter = requests.Request()
 
 
 def set_session(id_token):
-    claims = google.oauth2.id_token.verify_firebase_token(
-        id_token, firebase_request_adapter)
-    if claims:
-        return True, claims['name'].replace(' ', '_')
+    try:
+        claims = google.oauth2.id_token.verify_firebase_token(
+            id_token, firebase_request_adapter)
+        if claims:
+            return True, claims['name'].replace(' ', '_')
+    except ValueError:
+        raise exceptions.TokenExpired()

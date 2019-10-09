@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template, session, redirect
 from Models import Restaurant, User, MongoDb, Shared
 from google.auth.transport import requests
 import google.oauth2.id_token
+from Exceptions import exceptions
 
 
 from Routes.restaurant_route import restaurant_page
@@ -132,31 +133,35 @@ def get_wait():
 # Route here when using search bar
 @app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
 def SearchBar():
-    if not request.cookies.get("token"):
+    try:
+
+        if not request.cookies.get("token"):
+            return redirect('/')
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        # Get all restaurant categories
+        if session.get('RestaurantCategory') is None:
+            categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+            session['RestaurantCategory'] = categories
+        else:
+            categories = session['RestaurantCategory']
+
+        # Create regular expression of search query
+        tag = request.args.get('restaurant_tag')
+        tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
+
+        # Match search query to name or category of restaurant
+        res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
+
+        data = json.loads(res)
+        for restaurant in data:
+            if len(restaurant['images']) == 0:
+                restaurant['images'].append('https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
+        # Pass a blank tab to load the template page
+        UiContent = {'SelectedTab': '', 'RestaurantType': categories}
+        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
+                               pages=Shared.generate_page_list(), user=session.get('username'))
+    except exceptions.TokenExpired:
         return redirect('/')
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-    # Get all restaurant categories
-    if session.get('RestaurantCategory') is None:
-        categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-        session['RestaurantCategory'] = categories
-    else:
-        categories = session['RestaurantCategory']
-
-    # Create regular expression of search query
-    tag = request.args.get('restaurant_tag')
-    tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
-
-    # Match search query to name or category of restaurant
-    res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
-
-    data = json.loads(res)
-    for restaurant in data:
-        if len(restaurant['images']) == 0:
-            restaurant['images'].append('https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
-    # Pass a blank tab to load the template page
-    UiContent = {'SelectedTab': '', 'RestaurantType': categories}
-    return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
-                           pages=Shared.generate_page_list(), user=session.get('username'))
 
 
 # Route here for getting restaurants based on category
@@ -196,15 +201,14 @@ def ListAllRestaurant():
         UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': categories}
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
                                pages=Shared.generate_page_list(), user=session.get('username'))
-    except:
-        return sys.exc_info()
+    except exceptions.TokenExpired:
+        return redirect('/')
 
 
 firebase_request_adapter = requests.Request()
 @app.route('/login', methods=['GET'])
 def login():
     id_token = request.cookies.get("token")
-    print(id_token)
     try:
         claims = google.oauth2.id_token.verify_firebase_token(
         id_token, firebase_request_adapter)
@@ -239,13 +243,16 @@ def get_by_username(user_id):
 
 @app.route('/user-settings', methods=['GET'])
 def user_settings():
-    if not request.cookies.get("token"):
+    try:
+        if not request.cookies.get("token"):
+            return redirect('/')
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+        return render_template('user_settings.html', user=session.get('username'),
+                               categories=categories, pages=Shared.generate_page_list(),
+                               dbuser=User.get_user_info(session.get('username')))
+    except exceptions.TokenExpired:
         return redirect('/')
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-    categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-    return render_template('user_settings.html', user=session.get('username'),
-                           categories=categories, pages=Shared.generate_page_list(),
-                           dbuser=User.get_user_info(session.get('username')))
 
 
 @app.route('/update-user', methods=['POST'])
