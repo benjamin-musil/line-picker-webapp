@@ -7,6 +7,7 @@ APT-Team-6<br>
 [Program Overview](#overview)<br>
 [Phase 1](#phase-1)<br>
 [Phase 2](#phase-2)<br>
+[Quirks](#quirks)<br>
 
 ## <a name="overview">Program Overview</a>
 <b>Line Checker</b> uses crowdsourcing data to find out wait times of nearby restaurants based on category of food,
@@ -51,3 +52,6 @@ Data is hosted with MangoDB and Flask is used as the web framework to interact b
 6. <b>Search Reports</b>  
   Search for a specific restaurant or category by using the search bar on the search page. The searched word will match with tags from either a restaurant name or a category and return matches to the results table.
 
+## <a name="quirks">Quirks</a>
+  1. <b>Google Auth</b>  
+  After the token expires the applicaiton will send the user back to the login page, from there the only option is to sign out. simply sign out and then sign back in and everything will go back to normal.
