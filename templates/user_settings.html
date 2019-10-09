@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Settings</title>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+{{ macros.build_side_bar(pages=pages, selected="Add a Restaurant",user=user) }}
+<div id="main">
+    <h1>{{ dbuser['user_id'] }}</h1>
+    {{ dbuser['email'] }}
+    <br />
+    <br />
+    {% if dbuser['favorite_food'] %}
+    Current favorite food: {{ dbuser['favorite_food'] }}
+    {% else %}
+    No current favorite selected
+    {% endif %}
+    <br />
+    <form action="/update-user" method="post">
+        <h3>Category</h3>
+        <div id="checkboxes">
+            {% for category in categories %}
+            <input type="radio" name="category" value={{ category }}>
+            <label for={{ category }}>{{ category }}</label>
+            <br />
+            {% endfor %}
+        </div>
+        <button id="submit">Update favorite!</button>
+        <br/>
+    </form>
+</div>
+</body>
+</html>

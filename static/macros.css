@@ -26,10 +26,12 @@
 #user {
     color: #818181;
     max-width: 160px;
+    word-wrap: break-word;
 }
 
 #user h2 {
     font-size: 2.5rem;
+    word-wrap: break-word;
 }
 
 #user_pic {

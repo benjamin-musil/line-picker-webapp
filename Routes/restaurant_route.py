@@ -10,33 +10,41 @@ restaurant_page = Blueprint('restaurant_page', __name__,
 
 @restaurant_page.route('/restaurant/<restaurant_id>')
 def get_restaurant(restaurant_id):
-    if not request.cookies.get("token"):
-        return redirect('/')
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-    collection = MongoDb.mongo_collection('Test Restaurants ')
-    item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
-    restaurant = Restaurant.from_document(item)
-    # if the restaurant has less than 3 images, force it to have 3
-    # this is due to how my carousel component works
-    while len(restaurant.images) < 3:
-        restaurant.images.append(
-            'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
     try:
-        restaurant.wait_times = Restaurant.get_wait_times(restaurant_id)
-    except exceptions.NoWaitFound:
-        restaurant.wait_times = None
-    return render_template('restaurant.html', restaurant=restaurant.__dict__,
-                           wait_times=restaurant.__dict__['wait_times'], pages=Shared.generate_page_list(),
-                           user=session.get('username'))
+
+        if not request.cookies.get("token"):
+            return redirect('/')
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        collection = MongoDb.mongo_collection('Test Restaurants ')
+        item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
+        restaurant = Restaurant.from_document(item)
+        # if the restaurant has less than 3 images, force it to have 3
+        # this is due to how my carousel component works
+        while len(restaurant.images) < 3:
+            restaurant.images.append(
+                'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
+        try:
+            restaurant.wait_times = Restaurant.get_wait_times(restaurant_id)
+        except exceptions.NoWaitFound:
+            restaurant.wait_times = None
+        return render_template('restaurant.html', restaurant=restaurant.__dict__,
+                               wait_times=restaurant.__dict__['wait_times'], pages=Shared.generate_page_list(),
+                               user=session.get('username'))
+    except exceptions.TokenExpired:
+        return redirect('/')
 
 
 @restaurant_page.route('/add-restaurant/', methods=['GET'])
 def add_restaurant():
-    if not request.cookies.get("token"):
+    try:
+        if not request.cookies.get("token"):
+            return redirect('/')
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
+                               user=session.get('username'),
+                               categories=MongoDb.mongo_collection('Test Restaurants ').distinct('Category'))
+    except exceptions.TokenExpired:
         return redirect('/')
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-    return render_template('add_restaurant.html', pages=Shared.generate_page_list(),
-                           user=session.get('username'))
 
 
 @restaurant_page.route('/restaurant/submit-time', methods=['GET', 'POST'])

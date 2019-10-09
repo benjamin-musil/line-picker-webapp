@@ -90,8 +90,9 @@ def get_sidebar_info(user_id):
 
 def add_user_to_db(user_id, user_email):
     """
-
-    :param user_id:
+    add the user to the DB
+    :param user_id: id of the user
+    :param user_email: email of the user
     :return:
     """
     collection = MongoDb.mongo_collection('Users ')
@@ -103,6 +104,32 @@ def add_user_to_db(user_id, user_email):
         'role': 'user',
         'favorite_food': None
     }
-    print(obj)
     collection.insert(obj)
 
+
+def update_user(user_id, category):
+    """
+    update the favorite food in the db
+    :param user_id: id of the user
+    :param category: favorite food
+    :return:
+    """
+    collection = MongoDb.mongo_collection('Users ')
+    collection.find_one_and_update({'user_id': user_id}, {'$set':{'favorite_food': category}}, {'_id': False})
+
+
+def get_user_info(user_id):
+    """
+    get some information from the db based on the user
+    :param user_id:
+    :return:
+    """
+    collection = MongoDb.mongo_collection('Users ')
+    item = collection.find_one({'user_id': user_id}, {'_id': False})
+    obj = {
+        'user_id': item['user_id'],
+        'email': item['email'],
+        'favorite_food': item['favorite_food'],
+        'role': item['role']
+    }
+    return obj
