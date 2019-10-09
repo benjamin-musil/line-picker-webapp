@@ -1,4 +1,4 @@
-# Line Checker 
+# Line Picker
 https://apt-line-picker.appspot.com/ <br>
 APT-Team-6<br>
 <i>Team members: Robin Franklin, Nathan Wiatrek, Ben Musil, and Sanjai Pillai</i>
