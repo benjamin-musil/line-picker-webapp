@@ -1,15 +1,17 @@
-import sys
+
 import json
 import os
 import re
 from flask import Flask, request, jsonify, render_template, session, redirect
-from Models import Restaurant, User, MongoDb, Shared
 from google.auth.transport import requests
 import google.oauth2.id_token
+from Models import Restaurant, User, MongoDb, Shared
 from Exceptions import exceptions
 
 
 from Routes.restaurant_route import restaurant_page
+
+
 
 USERID = ''
 app = Flask(__name__, template_folder='templates/')
@@ -130,41 +132,7 @@ def get_wait():
     return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
 
 
-# Route here when using search bar
-@app.route('/ListAllRestaurant/Search', methods=['GET', 'POST'])
-def SearchBar():
-    try:
-
-        if not request.cookies.get("token"):
-            return redirect('/')
-        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-        # Get all restaurant categories
-        if session.get('RestaurantCategory') is None:
-            categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
-            session['RestaurantCategory'] = categories
-        else:
-            categories = session['RestaurantCategory']
-
-        # Create regular expression of search query
-        tag = request.args.get('restaurant_tag')
-        tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
-
-        # Match search query to name or category of restaurant
-        res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
-
-        data = json.loads(res)
-        for restaurant in data:
-            if len(restaurant['images']) == 0:
-                restaurant['images'].append('https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
-        # Pass a blank tab to load the template page
-        UiContent = {'SelectedTab': '', 'RestaurantType': categories}
-        return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
-                               pages=Shared.generate_page_list(), user=session.get('username'))
-    except exceptions.TokenExpired:
-        return redirect('/')
-
-
-# Route here for getting restaurants based on category
+# Route here for getting restaurants based on category or search
 @app.route('/ListAllRestaurant', methods=['GET', 'POST'])
 def ListAllRestaurant():
     try:
@@ -180,25 +148,36 @@ def ListAllRestaurant():
 
         # Get selected restaurant category tab
         selected_category = request.args.get('select')
+        # Get searched tag
+        searched_tag = request.args.get('restaurant_tag')
 
         if selected_category is None:
-            # Empty table at startup
-            SelectedTab = ''
-        else:
-            SelectedTab = selected_category
+            selected_tab = ''
 
-        jsonInput = {}
-        jsonInput['Category'] = SelectedTab
+            if searched_tag is None:
+                # return all restaurants on empty search
+                res = search_Restaurant({}).response[0]
+            else:
+                # return all restaurants matching a tag
+                searched_tag_regex = re.compile(".*" + searched_tag + ".*", re.IGNORECASE)
+                res = search_Restaurant({"$or": [{'Name': searched_tag_regex},
+                                                 {'Category': searched_tag_regex}]}).response[0]
 
-        if selected_category == 'All':
-            # Get all restaurants for All category
-            res = search_Restaurant({}).response[0]
         else:
-            # Get all restaurants for a specific category
-            res = search_Restaurant(jsonInput).response[0]
+            selected_tab = selected_category
+            json_input = {'Category': selected_tab}
+
+            if searched_tag is None:
+                # return all restaurants in a specific category
+                res = search_Restaurant(json_input).response[0]
+            else:
+                # return all restaurants matching a tag with a specific category
+                searched_tag_regex = re.compile(".*" + searched_tag + ".*", re.IGNORECASE)
+                res = search_Restaurant({"$and": [{'Name': searched_tag_regex},
+                                                  {'Category': selected_tab}]}).response[0]
 
         data = json.loads(res)
-        UiContent = {'SelectedTab': SelectedTab, 'RestaurantType': categories}
+        UiContent = {'SelectedTab': selected_tab, 'RestaurantType': categories}
         return render_template("AllRestaurant.html", UiContent=UiContent, restaurants=data,
                                pages=Shared.generate_page_list(), user=session.get('username'))
     except exceptions.TokenExpired:
@@ -206,12 +185,14 @@ def ListAllRestaurant():
 
 
 firebase_request_adapter = requests.Request()
+
+
 @app.route('/login', methods=['GET'])
 def login():
     id_token = request.cookies.get("token")
     try:
         claims = google.oauth2.id_token.verify_firebase_token(
-        id_token, firebase_request_adapter)
+            id_token, firebase_request_adapter)
     except ValueError as exc:
         # This will be raised if the token is expired or any other
         # verification checks fail.
