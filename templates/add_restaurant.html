@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Add a Restaurant</title>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
     {% import "macros.html" as macros %}
 </head>
 <body onload="clearForm()">
-<script src="{{ url_for('static', filename='add_restaurant.js') }}"></script>
+<script src="{{ url_for('static', filename='add_restaurant.js', _external=True) }}"></script>
 <script type="text/javascript" src="//code.jquery.com/jquery-1.5.2.js"></script>
-<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css') }}"/>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='add.css', _external=True) }}"/>
 
 {{ macros.build_side_bar(pages=pages, selected="Add a Restaurant",user=user) }}
 <div id="main">
@@ -19,30 +19,15 @@
         <input type="text" name="Address" placeholder="Address" id="address">
         <h3>Restaurant Category</h3>
         <div id="checkboxes">
-            <input type="radio" name="category" value="Taco">
-            <label for="Taco">Taco</label>
-            <br/>
-            <input type="radio" name="category" value="Chinese">
-            <label for="Chinese">Chinese</label>
-            <br/>
-            <input type="radio" name="category" value="Burger">
-            <label for="Burger">Burger</label>
-            <br/>
-            <input type="radio" name="category" value="Salad">
-            <label for="Salad">Salad</label>
-            <br/>
-            <input type="radio" name="category" value="Breakfast">
-            <label for="Breakfast">Breakfast</label>
-            <br/>
-            <input type="radio" name="category" id="other">
-            <label for="other">Other</label>
-            <br/>
-            <input type="text" id="other_explained" hidden="hidden">
+            {% for category in categories %}
+                <input type="radio" name="category" value={{ category }}>
+                <label for={{ category }}>{{ category }}</label>
+                <br/>
+            {% endfor %}
         </div>
         <button id="submit">Add Restaurant</button>
         <br/>
     </form>
-    <button>back</button>
 
     <script type="text/javascript">
         $(document).ready(function () {

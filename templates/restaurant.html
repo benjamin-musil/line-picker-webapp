@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <script src="{{ url_for('static', filename='restaurant.js') }}"></script>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='restaurant.css') }}"/>
+    <script src="{{ url_for('static', filename='restaurant.js', _external=True) }}"></script>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='restaurant.css', _external=True) }}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='macros.css', _external=True) }}"/>
     {% import "macros.html" as macros %}
 </head>
 <body>
@@ -64,19 +64,9 @@
         </div>
     </div>
 
-    <div id="Reviews">
-        Reviews
-        <br/>
-        bleh
-        <br/>
-        i don't even like tacos
-        <br/>
-        <br/>
-    </div>
-    <button>Submit your Review</button>
+
     <br/>
     <br/>
-    <button id="back">back</button>
 </div>
 
 <!-- Modal -->
@@ -104,6 +94,6 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='modal.js') }}"></script>
+<script src="{{ url_for('static', filename='modal.js', _external=True) }}"></script>
 </body>
 </html>
