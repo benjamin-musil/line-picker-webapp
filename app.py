@@ -360,6 +360,7 @@ def mobile_user_settings():
         if not request.cookies.get("token"):
             return redirect('/')
         session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        #session['username'] = 'rofranklin'
         categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
         return_dict = {
             "user": session.get('username'),
