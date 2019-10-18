@@ -1,4 +1,3 @@
-import sys
 import json
 import os
 import re
@@ -8,13 +7,14 @@ from google.auth.transport import requests
 import google.oauth2.id_token
 from Exceptions import exceptions
 
-
+from Routes.mobile_route import mobile
 from Routes.restaurant_route import restaurant_page
 
 USERID = ''
 app = Flask(__name__, template_folder='templates/')
 app.secret_key = os.urandom(24)
 app.register_blueprint(restaurant_page)
+app.register_blueprint(mobile)
 
 
 @app.errorhandler(404)
@@ -163,7 +163,6 @@ def SearchBar():
     except exceptions.TokenExpired:
         return redirect('/')
 
-
 # Route here for getting restaurants based on category
 @app.route('/ListAllRestaurant', methods=['GET', 'POST'])
 def ListAllRestaurant():
@@ -205,6 +204,7 @@ def ListAllRestaurant():
         return redirect('/')
 
 
+# candidate for possible refactor and/or new mobile specific endpoint
 firebase_request_adapter = requests.Request()
 @app.route('/login', methods=['GET'])
 def login():
@@ -255,6 +255,7 @@ def user_settings():
         return redirect('/')
 
 
+# maybe will need equivalent redirect for mobile?
 @app.route('/update-user', methods=['POST'])
 def update_user():
     form_args = request.form
