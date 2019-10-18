@@ -24,7 +24,6 @@ def search_Restaurant(reqJason):
 @mobile.route('/mobile/ListAllRestaurant/Search', methods=['GET', 'POST'])
 def mobileSearchBar():
     try:
-
         if not request.cookies.get("token"):
             return jsonify({'error': 'No token present'})
         session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
@@ -115,7 +114,6 @@ def mobile_get_by_username(user_id):
     return_dict = {
         "wait_submissions": user.__dict__['wait_time_submissions'],
         "image_submissions": user.__dict__['image_submissions'],
-        "pages": Shared.generate_page_list(),
         "user": session.get('username')
     }
     return jsonify(return_dict)
@@ -124,16 +122,15 @@ def mobile_get_by_username(user_id):
 @mobile.route('/mobile/user-settings', methods=['GET'])
 def mobile_user_settings():
     try:
-        # if not request.cookies.get("token"):
-        #     return jsonify({'error': 'No token present'})
-        # session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-        session['username'] = 'rofranklin'
-        categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+        if not request.cookies.get("token"):
+            return jsonify({'error': 'No token present'})
+        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        user = User.get_user_info(session['username'])
         return_dict = {
-            "user": session.get('username'),
-            "categories": categories,
-            #"pages": Shared.generate_page_list(),
-            "dbuser": User.get_user_info(session.get('username'))
+            'user_id': user['user_id'],
+            'email': user['email'],
+            'favorite_food': user['favorite_food'],
+            'role': user['role']
         }
         return jsonify(return_dict)
     except exceptions.TokenExpired:
