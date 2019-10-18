@@ -114,6 +114,7 @@ def mobile_get_by_username(user_id):
     return_dict = {
         "wait_submissions": user.__dict__['wait_time_submissions'],
         "image_submissions": user.__dict__['image_submissions'],
+        "pages": Shared.generate_page_list(),
         "user": session.get('username')
     }
     return jsonify(return_dict)
@@ -125,13 +126,21 @@ def mobile_user_settings():
         if not request.cookies.get("token"):
             return jsonify({'error': 'No token present'})
         session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-        user = User.get_user_info(session['username'])
         return_dict = {
-            'user_id': user['user_id'],
-            'email': user['email'],
-            'favorite_food': user['favorite_food'],
-            'role': user['role']
+            "pages": Shared.generate_page_list(),
+            "user": User.get_user_info(session.get('username'))
         }
         return jsonify(return_dict)
     except exceptions.TokenExpired:
         return jsonify({"error": "token expired"})
+
+
+@mobile.route('/mobile/get-all-pages', methods=['GET'])
+def get_pages():
+    return jsonify(Shared.generate_page_list())
+
+
+@mobile.route('/mobile/get-all-categories', methods=['GET'])
+def get_categories():
+    categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+    return jsonify(categories)
