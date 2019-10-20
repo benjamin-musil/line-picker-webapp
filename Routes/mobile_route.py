@@ -24,10 +24,9 @@ def search_Restaurant(reqJason):
 @mobile.route('/mobile/ListAllRestaurant/Search', methods=['GET', 'POST'])
 def mobileSearchBar():
     try:
-
-        if not request.cookies.get("token"):
+        if not request.headers.get("token"):
             return jsonify({'error': 'No token present'})
-        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
         # Get all restaurant categories
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -52,7 +51,6 @@ def mobileSearchBar():
         return_dict = {
             "UiContent": UiContent,
             "restaurants": data,
-            "pages": Shared.generate_page_list(),
             "user": session.get('username')
         }
         return jsonify(return_dict)
@@ -65,9 +63,9 @@ def mobileSearchBar():
 def mobileListAllRestaurant():
     try:
         # Get all restaurant categories
-        if not request.cookies.get("token"):
+        if not request.headers.get("token"):
             return jsonify({'error': 'No token present'})
-        session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
             session['RestaurantCategory'] = categories
@@ -98,7 +96,6 @@ def mobileListAllRestaurant():
         return_dict = {
             "UiContent": UiContent,
             "restaurants": data,
-            "pages": Shared.generate_page_list(),
             "user": session.get('username')
         }
         return jsonify(return_dict)
@@ -108,14 +105,13 @@ def mobileListAllRestaurant():
 
 @mobile.route('/mobile/<user_id>/mysubmissions', methods=['GET'])
 def mobile_get_by_username(user_id):
-    if not request.cookies.get("token"):
+    if not request.headers.get("token"):
         return jsonify({'error': 'No token present'})
-    session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
     user = User.get_submissions(user_id)
     return_dict = {
         "wait_submissions": user.__dict__['wait_time_submissions'],
         "image_submissions": user.__dict__['image_submissions'],
-        "pages": Shared.generate_page_list(),
         "user": session.get('username')
     }
     return jsonify(return_dict)
@@ -124,17 +120,24 @@ def mobile_get_by_username(user_id):
 @mobile.route('/mobile/user-settings', methods=['GET'])
 def mobile_user_settings():
     try:
-        # if not request.cookies.get("token"):
-        #     return jsonify({'error': 'No token present'})
-        # session['logged_in'], session['username'] = Shared.set_session(request.cookies.get("token"))
-        session['username'] = 'rofranklin'
-        categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+        if not request.headers.get('token'):
+            return jsonify({'error': 'No token present'})
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
         return_dict = {
-            "user": session.get('username'),
-            "categories": categories,
-            #"pages": Shared.generate_page_list(),
-            "dbuser": User.get_user_info(session.get('username'))
+            "user": User.get_user_info(session.get('username'))
         }
+        print(jsonify(return_dict))
         return jsonify(return_dict)
     except exceptions.TokenExpired:
         return jsonify({"error": "token expired"})
+
+
+@mobile.route('/mobile/get-all-pages', methods=['GET'])
+def get_pages():
+    return jsonify(Shared.generate_page_list())
+
+
+@mobile.route('/mobile/get-all-categories', methods=['GET'])
+def get_categories():
+    categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
+    return jsonify(categories)

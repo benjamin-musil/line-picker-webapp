@@ -38,12 +38,24 @@ def generate_page_list():
 
 firebase_request_adapter = requests.Request()
 
-
 def set_session(id_token):
     try:
         claims = google.oauth2.id_token.verify_firebase_token(
             id_token, firebase_request_adapter)
         if claims:
             return True, claims['name'].replace(' ', '_')
+    except ValueError:
+        raise exceptions.TokenExpired()
+
+
+def set_mobile_session(id_token):
+    """
+    set the mobile session based on mobile info
+    :param id_token: id_token from the mobile app
+    :return: True, and user_name
+    """
+    try:
+        user = google.oauth2.id_token.verify_oauth2_token(id_token, requests.Request())
+        return True, user['name'].replace(' ', '_')
     except ValueError:
         raise exceptions.TokenExpired()
