@@ -4,6 +4,7 @@ from google.auth.transport import requests
 from Models import Shared, User
 from flask import request
 from Exceptions import exceptions
+import logging
 
 
 def generate_page_list():

@@ -26,7 +26,7 @@ def mobileSearchBar():
     try:
         if not request.headers.get("token"):
             return jsonify({'error': 'No token present'})
-        session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get("token"))
         # Get all restaurant categories
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -65,7 +65,7 @@ def mobileListAllRestaurant():
         # Get all restaurant categories
         if not request.headers.get("token"):
             return jsonify({'error': 'No token present'})
-        session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get("token"))
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
             session['RestaurantCategory'] = categories
@@ -107,7 +107,7 @@ def mobileListAllRestaurant():
 def mobile_get_by_username(user_id):
     if not request.headers.get("token"):
         return jsonify({'error': 'No token present'})
-    session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get("token"))
     user = User.get_submissions(user_id)
     return_dict = {
         "wait_submissions": user.__dict__['wait_time_submissions'],
