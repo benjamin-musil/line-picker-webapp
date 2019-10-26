@@ -2,6 +2,7 @@ import datetime
 import json
 import re
 import bson
+import ast
 from flask import Flask, request, jsonify, session, Blueprint
 from Models import Restaurant, User, MongoDb, Shared
 from Exceptions import exceptions
@@ -166,6 +167,17 @@ def submit_wait_time():
     wait_time = args.get('wait')
     Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
     return jsonify(args)
+
+
+@mobile.route('/mobile/submit-restaurant', methods=['POST'])
+def submit_mobile_restaurant():
+    args = request.get_json()
+    restaurant = Restaurant.Restaurant('', args.get('Name'), args.get('Address'), args.get('category'), '-')
+    new_id = restaurant.add_to_db()
+    new = {
+        "id": str(new_id)
+    }
+    return jsonify(new)
 
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
