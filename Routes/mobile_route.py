@@ -161,12 +161,11 @@ def submit_wait_time():
         return jsonify({'error': 'No token present'})
     session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
     # print(request.get_data())
-    bleh = request.get_json()
-    print(type(bleh))
-    restaurant_id = bleh.get('Id')
-    wait_time = bleh.get('wait')
+    args = request.get_json()
+    restaurant_id = args.get('Id')
+    wait_time = args.get('wait')
     Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
-    return jsonify(bleh)
+    return jsonify(args)
 
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
