@@ -1,5 +1,8 @@
+import datetime
 import json
 import re
+import bson
+import ast
 from flask import Flask, request, jsonify, session, Blueprint
 from Models import Restaurant, User, MongoDb, Shared
 from Exceptions import exceptions
@@ -19,6 +22,7 @@ def search_Restaurant(reqJason):
         restaurant = Restaurant.from_document(document)
         restaurant_arr.append(restaurant.__dict__)
     return jsonify(restaurant_arr)
+
 
 # Route here when using search bar on mobile
 @mobile.route('/mobile/ListAllRestaurant/Search', methods=['GET', 'POST'])
@@ -130,6 +134,50 @@ def mobile_user_settings():
         return jsonify(return_dict)
     except exceptions.TokenExpired:
         return jsonify({"error": "token expired"})
+
+
+@mobile.route('/mobile/restaurant/<restaurant_id>')
+def get_mobile_restaurant(restaurant_id):
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    item = collection.find_one({"_id": bson.objectid.ObjectId(restaurant_id)})
+    restaurant = Restaurant.from_document(item)
+    # if the restaurant has less than 3 images, force it to have 3
+    # this is due to how my carousel component works
+    while len(restaurant.images) < 3:
+        restaurant.images.append(
+            'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
+    try:
+        restaurant.wait_times = Restaurant.get_wait_times(restaurant_id)
+    except exceptions.NoWaitFound:
+        restaurant.wait_times = None
+    return jsonify(restaurant.__dict__)
+
+
+@mobile.route('/mobile/submit-time', methods=['POST'])
+def submit_wait_time():
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+    # print(request.get_data())
+    args = request.get_json()
+    restaurant_id = args.get('Id')
+    wait_time = args.get('wait')
+    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
+    return jsonify(args)
+
+
+@mobile.route('/mobile/submit-restaurant', methods=['POST'])
+def submit_mobile_restaurant():
+    args = request.get_json()
+    restaurant = Restaurant.Restaurant('', args.get('Name'), args.get('Address'), args.get('category'), '-')
+    new_id = restaurant.add_to_db()
+    new = {
+        "id": str(new_id)
+    }
+    return jsonify(new)
 
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
