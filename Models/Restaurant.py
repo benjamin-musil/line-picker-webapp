@@ -50,6 +50,7 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter, geolocation):
     :param wait_time: wait time
     :param time: time submitted
     :param submitter: who submitted the wait time
+    :param geolocation: current location when submitting wait time
     :return:
     """
     # mostly for testing
@@ -69,7 +70,7 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter, geolocation):
         }
         collection.insert_one(wait_post)
     User.append_submit_wait(submitter, [wait_time, str(time), str(restaurant_id)])
-    update_time_reported_by(str(restaurant_id), wait_time, submitter)
+    update_time_reported_by(str(restaurant_id), wait_time, submitter, geolocation)
 
 
 def submit_image(restaurant_id, url, submitter):
@@ -89,7 +90,7 @@ def submit_image(restaurant_id, url, submitter):
 def get_wait_times(restaurant_id):
     """
     Get the wait times of a restaurant
-    :param restaurant_id:
+    :param restaurant_id: ID of restaurant to get wait time of
     :return: An array of wait times
     :raises: No Wait Time found
     """
@@ -108,14 +109,15 @@ def get_wait_times(restaurant_id):
     return wait_times
 
 
-def update_time_reported_by(restaurant_id, time, submitter):
+def update_time_reported_by(restaurant_id, time, submitter, geolocation):
     """
     change the reported by and current wait time to what was just submitted
     :param restaurant_id: id of restaurant
     :param time: wait time that was submitted (in minutes)
     :param submitter: user_id
-    :return:
+    :param geolocation: latest location of report submission
+    :return: None
     """
     collection = MongoDb.mongo_collection('Test Restaurants ')
     collection.find_one_and_update({'_id': bson.objectid.ObjectId(restaurant_id)},
-                                   {'$set': {'WaitTimes': time, 'ReportedBy': submitter}})
+                                   {'$set': {'WaitTimes': time, 'ReportedBy': submitter, 'Geolocation': geolocation}})
