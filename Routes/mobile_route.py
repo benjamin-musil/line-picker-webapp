@@ -111,7 +111,7 @@ def mobileListAllRestaurant():
 def mobile_get_by_username(user_id):
     if not request.headers.get("token"):
         return jsonify({'error': 'No token present'})
-    session['logged_in'], session['username'] = Shared.set_mobile_session(request.cookies.get("token"))
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get("token"))
     user = User.get_submissions(user_id)
     return_dict = {
         "wait_submissions": user.__dict__['wait_time_submissions'],
@@ -178,6 +178,17 @@ def submit_mobile_restaurant():
         "id": str(new_id)
     }
     return jsonify(new)
+
+
+@mobile.route('/mobile/verify-token', methods=['GET'])
+def verify_mobile_token():
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    try:
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+        return jsonify({"value": "good"})
+    except exceptions.TokenExpired:
+        return jsonify({"error": "token expired"})
 
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
