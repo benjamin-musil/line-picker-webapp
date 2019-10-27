@@ -4,7 +4,8 @@ from Exceptions import exceptions
 
 
 class Restaurant:
-    def __init__(self, restaurant_id, name, address, category, wait_times, reported_by=None, images=[]):
+    def __init__(self, restaurant_id, name, address, category, wait_times, reported_by=None,
+                 images=[], geolocation=None):
         self.id = restaurant_id
         self.name = name
         self.address = address
@@ -12,6 +13,7 @@ class Restaurant:
         self.wait_times = wait_times
         self.reported_by = reported_by
         self.images = images
+        self.geolocation = geolocation
 
     def add_to_db(self):
         collection = MongoDb.mongo_collection('Test Restaurants ')
@@ -20,7 +22,8 @@ class Restaurant:
             'Address': self.address,
             'Category': self.category,
             'WaitTimes': 'unknown',
-            'ReportedBy': 'unknown'
+            'ReportedBy': 'unknown',
+            'Geolocation': 'unknown'
         }
         return collection.insert_one(obj).inserted_id
 
@@ -37,10 +40,10 @@ def from_document(document):
     if images is None:
         images = []
     return Restaurant(str(values[0]), document.get('Name'), document.get('Address'), document.get('Category'),
-                      document.get('WaitTimes'), document.get('ReportedBy'), images)
+                      document.get('WaitTimes'), document.get('ReportedBy'), images, document.get('Geolocation'))
 
 
-def submit_wait_time(restaurant_id, wait_time, time, submitter):
+def submit_wait_time(restaurant_id, wait_time, time, submitter, geolocation):
     """
     Submit the wait time to the DB
     :param restaurant_id: Restaurant ID
@@ -52,14 +55,17 @@ def submit_wait_time(restaurant_id, wait_time, time, submitter):
     # mostly for testing
     if submitter is None:
         submitter = 'admin'
+    if geolocation is None:
+        geolocation = 'null'
     collection = MongoDb.mongo_collection('Test Wait Times', database_name='WaitTimes')
     if collection.find_one_and_update({"RestaurantId": str(restaurant_id)},
-                                      {'$push': {'WaitTime': [wait_time, str(time), submitter]}}, {'_id': False}) \
+                                      {'$push': {'WaitTime': [wait_time, str(time), submitter,
+                                                              geolocation]}}, {'_id': False}) \
             is None:
         # submit the wait for the first time
         wait_post = {
             'RestaurantId': str(restaurant_id),
-            'WaitTime': [[wait_time, str(time), submitter]]
+            'WaitTime': [[wait_time, str(time), submitter, geolocation]]
         }
         collection.insert_one(wait_post)
     User.append_submit_wait(submitter, [wait_time, str(time), str(restaurant_id)])
@@ -75,7 +81,8 @@ def submit_image(restaurant_id, url, submitter):
     :return: None
     """
     collection = MongoDb.mongo_collection('Test Restaurants ')
-    collection.find_one_and_update({"_id": bson.objectid.ObjectId(restaurant_id)}, {'$push': {'Images': url}})
+    collection.find_one_and_update({"_id": bson.objectid.ObjectId(restaurant_id)},
+                                   {'$push': {'Images': url}})
     User.append_submit_image(submitter, [url, str(restaurant_id)])
 
 

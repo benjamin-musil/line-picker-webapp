@@ -127,7 +127,8 @@ def get_wait():
     object_id = json_arr[0]['_id']
     print(object_id)
     wait_time, timestamp = mongo_get_wait_time_by_objectid(object_id)
-    return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at ' + str(timestamp)), 200
+    return jsonify(str(name) + ' has a wait time of ' + str(wait_time) + ' reported at '
+                   + str(timestamp)), 200
 
 
 # Route here when using search bar
@@ -269,4 +270,4 @@ def input():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, threaded="True")
+    app.run(debug=False, threaded="True", host='0.0.0.0')

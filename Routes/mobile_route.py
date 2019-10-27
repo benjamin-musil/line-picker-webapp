@@ -165,7 +165,9 @@ def submit_wait_time():
     args = request.get_json()
     restaurant_id = args.get('Id')
     wait_time = args.get('wait')
-    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'))
+    geolocation = args.get('geolocation')
+    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'),
+                                geolocation)
     return jsonify(args)
 
 
