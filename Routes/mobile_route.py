@@ -179,6 +179,16 @@ def submit_mobile_restaurant():
     }
     return jsonify(new)
 
+@mobile.route('/mobile/verify-token', methods=['GET'])
+def verify_mobile_token():
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    try:
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+        return jsonify({"value": "good"})
+    except exceptions.TokenExpired:
+        return jsonify({"error": "token expired"})
+
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
 def get_pages():
@@ -189,3 +199,16 @@ def get_pages():
 def get_categories():
     categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
     return jsonify(categories)
+
+
+@mobile.route('/mobile/update-user', methods=['GET', 'POST'])
+def update_user():
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+    print(request.get_data())
+    args = request.get_json()
+    category = args.get('category')
+    print(category)
+    User.update_user(session.get('username'), category)
+    return jsonify(args)
