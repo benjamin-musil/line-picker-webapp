@@ -2,13 +2,14 @@ import datetime
 import json
 import re
 import bson
+import requests
 import ast
 from flask import Flask, request, jsonify, session, Blueprint
 from Models import Restaurant, User, MongoDb, Shared
 from Exceptions import exceptions
 
 
-mobile = Blueprint('mobile', __name__,  template_folder='templates')
+mobile = Blueprint('mobile', __name__, template_folder='templates')
 
 
 def search_Restaurant(reqJason):
@@ -161,20 +162,30 @@ def submit_wait_time():
     if not request.headers.get('token'):
         return jsonify({'error': 'No token present'})
     session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
-    # print(request.get_data())
     args = request.get_json()
     restaurant_id = args.get('Id')
     wait_time = args.get('wait')
     geolocation = args.get('geolocation')
-    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(), session.get('username'),
-                                geolocation)
-    return jsonify(args)
 
+    # Post image to ImgBB and get url back
+    image64 = args.get('image64')
+    # apt-team-6 API key for ImgBB in POST request
+    image_post = requests.post("https://api.imgbb.com/1/upload?key=3853892f353149fea471291dd38e9206",
+                             data={"image": image64})
+    image_url = json.loads(image_post.content).get('data').get('display_url')
+
+    # Submit wait time and image url
+    Restaurant.submit_wait_time(restaurant_id, wait_time, datetime.datetime.now(),
+                                session.get('username'), geolocation)
+    Restaurant.submit_image(restaurant_id, image_url, session.get('username'))
+
+    return jsonify(args)
 
 @mobile.route('/mobile/submit-restaurant', methods=['POST'])
 def submit_mobile_restaurant():
     args = request.get_json()
-    restaurant = Restaurant.Restaurant('', args.get('Name'), args.get('Address'), args.get('category'), '-')
+    restaurant = Restaurant.Restaurant('', args.get('Name'), args.get('Address'),
+                                       args.get('category'), '-')
     new_id = restaurant.add_to_db()
     new = {
         "id": str(new_id)
