@@ -190,6 +190,17 @@ def verify_mobile_token():
         return jsonify({"error": "token expired"})
 
 
+@mobile.route('/mobile/verify-token', methods=['GET'])
+def verify_mobile_token():
+    if not request.headers.get('token'):
+        return jsonify({'error': 'No token present'})
+    try:
+        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+        return jsonify({"value": "good"})
+    except exceptions.TokenExpired:
+        return jsonify({"error": "token expired"})
+
+
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
 def get_pages():
     return jsonify(Shared.generate_page_list())
