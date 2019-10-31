@@ -64,6 +64,7 @@ def mobileSearchBar():
         # returns an error message so mobile front end can render an error message
         return jsonify({"error": "token expired"})
 
+
 # Mobile Route here for getting restaurants based on category
 @mobile.route('/mobile/ListAllRestaurant', methods=['GET', 'POST'])
 def mobileListAllRestaurant():
