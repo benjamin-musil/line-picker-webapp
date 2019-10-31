@@ -32,6 +32,9 @@ def mobileSearchBar():
         if not request.headers.get("token"):
             return jsonify({'error': 'No token present'})
         session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get("token"))
+
+        args = request.get_json()
+
         # Get all restaurant categories
         if session.get('RestaurantCategory') is None:
             categories = MongoDb.mongo_collection('Test Restaurants ').distinct('Category')
@@ -40,7 +43,7 @@ def mobileSearchBar():
             categories = session['RestaurantCategory']
 
         # Create regular expression of search query
-        tag = request.args.get('restaurant_tag')
+        tag = args.get('restaurant_tag')
         tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
 
         # Match search query to name or category of restaurant
@@ -54,11 +57,9 @@ def mobileSearchBar():
         UiContent = {'SelectedTab': '', 'RestaurantType': categories}
         # we now just return a json blob rather than a template
         return_dict = {
-            "UiContent": UiContent,
-            "restaurants": data,
-            "user": session.get('username')
+            "restaurants": data
         }
-        return jsonify(return_dict)
+        return jsonify({"restaurants": data})
     except exceptions.TokenExpired:
         # returns an error message so mobile front end can render an error message
         return jsonify({"error": "token expired"})
@@ -196,22 +197,8 @@ def submit_mobile_restaurant():
 def verify_mobile_token():
     if not request.headers.get('token'):
         return jsonify({'error': 'No token present'})
-    try:
-        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
-        return jsonify({"value": "good"})
-    except exceptions.TokenExpired:
-        return jsonify({"error": "token expired"})
-
-
-@mobile.route('/mobile/verify-token', methods=['GET'])
-def verify_mobile_token():
-    if not request.headers.get('token'):
-        return jsonify({'error': 'No token present'})
-    try:
-        session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
-        return jsonify({"value": "good"})
-    except exceptions.TokenExpired:
-        return jsonify({"error": "token expired"})
+    session['logged_in'], session['username'] = Shared.set_mobile_session(request.headers.get('token'))
+    return jsonify({"value": "good"})
 
 
 @mobile.route('/mobile/get-all-pages', methods=['GET'])
