@@ -8,7 +8,6 @@ from flask import Flask, request, jsonify, session, Blueprint
 from Models import Restaurant, User, MongoDb, Shared
 from Exceptions import exceptions
 
-
 mobile = Blueprint('mobile', __name__, template_folder='templates')
 
 
@@ -44,7 +43,7 @@ def mobileSearchBar():
 
         # Create regular expression of search query
         tag = args.get('restaurant_tag')
-        tag_regex = re.compile(".*"+tag+".*", re.IGNORECASE)
+        tag_regex = re.compile(".*" + tag + ".*", re.IGNORECASE)
 
         # Match search query to name or category of restaurant
         res = search_Restaurant({"$or": [{'Name': tag_regex}, {'Category': tag_regex}]}).response[0]
@@ -52,7 +51,8 @@ def mobileSearchBar():
         data = json.loads(res)
         for restaurant in data:
             if len(restaurant['images']) == 0:
-                restaurant['images'].append('https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
+                restaurant['images'].append(
+                    'https://www.drupal.org/files/styles/grid-3-2x/public/project-images/drupal-addtoany-logo.png')
         # Pass a blank tab to load the template page
         UiContent = {'SelectedTab': '', 'RestaurantType': categories}
         # we now just return a json blob rather than a template
@@ -63,6 +63,7 @@ def mobileSearchBar():
     except exceptions.TokenExpired:
         # returns an error message so mobile front end can render an error message
         return jsonify({"error": "token expired"})
+
 
 # Mobile Route here for getting restaurants based on category
 @mobile.route('/mobile/ListAllRestaurant', methods=['GET', 'POST'])
@@ -172,7 +173,7 @@ def submit_wait_time():
     image64 = args.get('image64')
     # apt-team-6 API key for ImgBB in POST request
     image_post = requests.post("https://api.imgbb.com/1/upload?key=3853892f353149fea471291dd38e9206",
-                             data={"image": image64})
+                               data={"image": image64})
     image_url = json.loads(image_post.content).get('data').get('display_url')
 
     # Submit wait time and image url
@@ -181,6 +182,7 @@ def submit_wait_time():
     Restaurant.submit_image(restaurant_id, image_url, session.get('username'))
 
     return jsonify(args)
+
 
 @mobile.route('/mobile/submit-restaurant', methods=['POST'])
 def submit_mobile_restaurant():
@@ -192,6 +194,7 @@ def submit_mobile_restaurant():
         "id": str(new_id)
     }
     return jsonify(new)
+
 
 @mobile.route('/mobile/verify-token', methods=['GET'])
 def verify_mobile_token():
@@ -223,3 +226,42 @@ def update_user():
     print(category)
     User.update_user(session.get('username'), category)
     return jsonify(args)
+
+
+@mobile.route('/mobile/recent-reports', methods=['POST'])
+def recent_reports():
+    args = request.get_json()
+    lat1 = args.get('lat1')
+    long1 = args.get('long1')
+    five_closest = []
+    max_distance = 0.0
+    restaurant_arr = []
+    collection = MongoDb.mongo_collection('Test Restaurants ')
+    results = collection.find({"Geolocation": {"$ne": None}})
+    for document in results:
+        restaurant = Restaurant.from_document(document)
+        restaurant_arr.append(restaurant.__dict__)
+
+    for restaurant in restaurant_arr:
+        geo = re.findall(r'[.\d-]+', restaurant.get("geolocation"))
+        if len(geo) is 2:
+            distance = Restaurant.get_distance(lat1, long1, geo[0], geo[1])
+            restaurant['distance'] = distance
+            if len(five_closest) < 5:
+                five_closest.append(restaurant)
+                if distance > max_distance:
+                    max_distance = distance
+            else:
+                if distance < max_distance:
+                    # kick out the farthest
+                    index = next((i for i, item in enumerate(five_closest) if item.get('distance') == max_distance), 0)
+                    del five_closest[index]
+                    five_closest.append(restaurant)
+                    temp_dist = 0
+                    # find the new max distance
+                    for rest in five_closest:
+                        if rest.get('distance') > temp_dist:
+                            temp_dist = rest.get('distance')
+                    max_distance = temp_dist
+
+    return jsonify(five_closest)
