@@ -1,4 +1,5 @@
 import bson
+import geopy.distance
 from Models import MongoDb, User
 from Exceptions import exceptions
 
@@ -121,3 +122,18 @@ def update_time_reported_by(restaurant_id, time, submitter, geolocation):
     collection = MongoDb.mongo_collection('Test Restaurants ')
     collection.find_one_and_update({'_id': bson.objectid.ObjectId(restaurant_id)},
                                    {'$set': {'WaitTimes': time, 'ReportedBy': submitter, 'Geolocation': geolocation}})
+
+
+def get_distance(lat1, long1, lat2, long2):
+    """
+    Get the distance between locations
+    :param lat1:
+    :param long1:
+    :param lat2:
+    :param long2:
+    :return:
+    """
+    coords_1 = (lat1, long1)
+    coords_2 = (lat2, long2)
+
+    return geopy.distance.distance(coords_1, coords_2).mi
