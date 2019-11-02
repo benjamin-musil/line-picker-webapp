@@ -181,7 +181,7 @@ def submit_wait_time():
                                 session.get('username'), geolocation)
     Restaurant.submit_image(restaurant_id, image_url, session.get('username'))
 
-    return jsonify(args)
+    return jsonify({"Id":restaurant_id})
 
 
 @mobile.route('/mobile/submit-restaurant', methods=['POST'])
