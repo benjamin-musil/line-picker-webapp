@@ -29,6 +29,6 @@ virtualenv==16.7.5
 wcwidth==0.1.7
 Werkzeug==0.15.5
 wrapt==1.11.2
-gunicorn==19.3.0
+gunicorn==19.5.0
 geographiclib==1.50
 geopy==1.20.0
