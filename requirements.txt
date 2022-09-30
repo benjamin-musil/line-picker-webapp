@@ -11,7 +11,7 @@ google-cloud-datastore==1.7.3
 googleapis-common-protos==1.6.0
 jedi==0.15.1
 Jinja2==2.10.1
-joblib==0.13.2
+joblib==1.2.0
 kiwisolver==1.1.0
 pexpect==4.7.0
 pickleshare==0.7.5
